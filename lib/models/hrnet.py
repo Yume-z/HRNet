@@ -238,7 +238,8 @@ class HighResolutionModule(nn.Module):
                     y = y + F.interpolate(
                         self.fuse_layers[i][j](x[j]),
                         size=[x[i].shape[2], x[i].shape[3]],
-                        mode='bilinear')
+                        mode='bilinear',
+                        align_corners=False)
                 else:
                     y = y + self.fuse_layers[i][j](x[j])
             x_fuse.append(self.relu(y))
@@ -457,13 +458,13 @@ class HighResolutionNet(nn.Module):
                 nn.init.constant_(m.bias, 0)
         if os.path.isfile(pretrained):
             pretrained_dict = torch.load(pretrained)
-            logger.info('=> loading pretrained model {}'.format(pretrained))
+            # logger.info('=> loading pretrained model {}'.format(pretrained))
             model_dict = self.state_dict()
             pretrained_dict = {k: v for k, v in pretrained_dict.items()
                                if k in model_dict.keys()}
-            for k, _ in pretrained_dict.items():
-                logger.info(
-                    '=> loading {} pretrained model {}'.format(k, pretrained))
+            # for k, _ in pretrained_dict.items():
+            #     logger.info(
+            #         '=> loading {} pretrained model {}'.format(k, pretrained))
             model_dict.update(pretrained_dict)
             self.load_state_dict(model_dict)
 

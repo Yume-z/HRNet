@@ -19,7 +19,6 @@ def get_preds(scores):
     """
     assert scores.dim() == 4, 'Score maps should be 4-dim'
     maxval, idx = torch.max(scores.view(scores.size(0), scores.size(1), -1), 2)
-
     maxval = maxval.view(scores.size(0), scores.size(1), 1)
     idx = idx.view(scores.size(0), scores.size(1), 1) + 1
 
@@ -45,18 +44,23 @@ def compute_nme(preds, meta):
 
     for i in range(N):
         pts_pred, pts_gt = preds[i, ], target[i, ]
-        if L == 19:  # aflw
-            interocular = meta['box_size'][i]
-        elif L == 29:  # cofw
-            interocular = np.linalg.norm(pts_gt[8, ] - pts_gt[9, ])
-        elif L == 68:  # 300w
-            # interocular
-            interocular = np.linalg.norm(pts_gt[36, ] - pts_gt[45, ])
-        elif L == 98:
-            interocular = np.linalg.norm(pts_gt[60, ] - pts_gt[72, ])
-        else:
-            raise ValueError('Number of landmarks is wrong')
-        rmse[i] = np.sum(np.linalg.norm(pts_pred - pts_gt, axis=1)) / (interocular * L)
+        # if L == 19:  # aflw
+        #     interocular = meta['box_size'][i]
+        # elif L == 29:  # cofw
+        #     interocular = np.linalg.norm(pts_gt[8, ] - pts_gt[9, ])
+        # elif L == 96:  # 300w
+        #     # interocular
+        #     interocular = np.linalg.norm(pts_gt[0, ] - pts_gt[3, ])
+        # elif L == 98:
+        #     interocular = np.linalg.norm(pts_gt[60, ] - pts_gt[72, ])
+        # else:
+        #     raise ValueError('Number of landmarks is wrong')
+
+        # rmse[i] = np.sum(np.linalg.norm(pts_pred - pts_gt, axis=1)) / L
+        rmse[i] = np.sum(np.power(np.linalg.norm(pts_pred - pts_gt, axis=1), 2)) / L / 1000 # mse
+
+        # print(f"pts_pred:{pts_pred},pts_gt:{pts_gt},loss{rmse[i]}.")
+
 
     return rmse
 

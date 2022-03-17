@@ -7,21 +7,21 @@ DATASET:
   ROOT: './data/300w/images'
   TRAINSET: './data/300w/face_landmarks_300w_train.csv'
   TESTSET: './data/300w/face_landmarks_300w_valid.csv'
-  FLIP: true
+  FLIP: false
   SCALE_FACTOR: 0.25
   ROT_FACTOR: 30
 MODEL:
   NAME: 'hrnet'
-  NUM_JOINTS: 68
+  NUM_JOINTS: 96
   INIT_WEIGHTS: true
   PRETRAINED: 'hrnetv2_pretrained/hrnetv2_w18_imagenet_pretrained.pth'
   SIGMA: 1.0 
   IMAGE_SIZE:
-    - 256
-    - 256
+    - 512
+    - 512
   HEATMAP_SIZE:
-    - 64
-    - 64
+    - 128
+    - 128
   EXTRA:
     FINAL_CONV_KERNEL: 1
     STAGE2:
@@ -64,16 +64,16 @@ MODEL:
         - 144
       FUSE_METHOD: SUM
 TRAIN:
-  BATCH_SIZE_PER_GPU: 16
+  BATCH_SIZE_PER_GPU: 2
   SHUFFLE: true
   BEGIN_EPOCH: 0
-  END_EPOCH: 60
+  END_EPOCH: 100
   RESUME: true
   OPTIMIZER: 'adam'
   LR: 0.0001
   WD: 0.0
-  LR_STEP: [30, 50]
+  LR_STEP: [60, 90]
   MOMENTUM: 0.0
   NESTEROV: false
 TEST:
-  BATCH_SIZE_PER_GPU: 8
+  BATCH_SIZE_PER_GPU: 2

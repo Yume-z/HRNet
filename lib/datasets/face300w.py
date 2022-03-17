@@ -39,8 +39,8 @@ class Face300W(data.Dataset):
         # load annotations
         self.landmarks_frame = pd.read_csv(self.csv_file)
 
-        self.mean = np.array([0.485, 0.456, 0.406], dtype=np.float32)
-        self.std = np.array([0.229, 0.224, 0.225], dtype=np.float32)
+        self.mean = np.array([0.124, 0.114, 0.110], dtype=np.float32)
+        self.std = np.array([0.179, 0.165, 0.161], dtype=np.float32)
 
     def __len__(self):
         return len(self.landmarks_frame)
@@ -56,11 +56,15 @@ class Face300W(data.Dataset):
         center = torch.Tensor([center_w, center_h])
 
         pts = self.landmarks_frame.iloc[idx, 4:].values
+        # print('pts', pts)
         pts = pts.astype('float').reshape(-1, 2)
+        # print('pts_1', pts)
 
         scale *= 1.25
         nparts = pts.shape[0]
         img = np.array(Image.open(image_path).convert('RGB'), dtype=np.float32)
+        # imggg = np.array(Image.open(image_path).convert('L'), dtype=np.float32)
+        # print('image', imggg.shape)
 
         r = 0
         if self.is_train:
@@ -68,12 +72,12 @@ class Face300W(data.Dataset):
                                             1 + self.scale_factor))
             r = random.uniform(-self.rot_factor, self.rot_factor) \
                 if random.random() <= 0.6 else 0
-            if random.random() <= 0.5 and self.flip:
-                img = np.fliplr(img)
-                pts = fliplr_joints(pts, width=img.shape[1], dataset='300W')
-                center[0] = img.shape[1] - center[0]
+            # if random.random() <= 0.5 and self.flip:
+            #     img = np.fliplr(img)
+            #     pts = fliplr_joints(pts, width=img.shape[1], dataset='300W')
+            #     center[0] = img.shape[1] - center[0]
 
-        img = crop(img, center, scale, self.input_size, rot=r)
+        # img = crop(img, center, scale, self.input_size, rot=r)
 
         target = np.zeros((nparts, self.output_size[0], self.output_size[1]))
         tpts = pts.copy()
@@ -85,11 +89,15 @@ class Face300W(data.Dataset):
                 target[i] = generate_target(target[i], tpts[i]-1, self.sigma,
                                             label_type=self.label_type)
         img = img.astype(np.float32)
+        # print('image', img.shape)
         img = (img/255.0 - self.mean) / self.std
         img = img.transpose([2, 0, 1])
         target = torch.Tensor(target)
+        # print('target', target.shape)
         tpts = torch.Tensor(tpts)
+        # print('tpts', tpts.shape)
         center = torch.Tensor(center)
+        # print('out', img.shape)
 
         meta = {'index': idx, 'center': center, 'scale': scale,
                 'pts': torch.Tensor(pts), 'tpts': tpts}

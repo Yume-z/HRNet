@@ -66,8 +66,10 @@ def train(config, train_loader, model, critertion, optimizer,
 
         # NME
         score_map = output.data.cpu()
-        preds = decode_preds(score_map, meta['center'], meta['scale'], [64, 64])
+        preds = decode_preds(score_map, meta['center'], meta['scale'], [128, 128])
 
+        # if epoch > 50:
+        #     print(f"train_pred:{preds}.")
         nme_batch = compute_nme(preds, meta)
         nme_batch_sum = nme_batch_sum + np.sum(nme_batch)
         nme_count = nme_count + preds.size(0)
@@ -131,7 +133,10 @@ def validate(config, val_loader, model, criterion, epoch, writer_dict):
             # loss
             loss = criterion(output, target)
 
-            preds = decode_preds(score_map, meta['center'], meta['scale'], [64, 64])
+            preds = decode_preds(score_map, meta['center'], meta['scale'], [128, 128])
+            # if epoch > 40:
+            #     print(f"val_pred:{preds}.")
+
             # NME
             nme_temp = compute_nme(preds, meta)
             # Failure Rate under different threshold
