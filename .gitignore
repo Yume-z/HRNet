@@ -9,3 +9,5 @@ hrnetv2_pretrained/
 output/
 log/
 *.swp
+.err
+.out

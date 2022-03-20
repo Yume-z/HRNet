@@ -1,0 +1,214 @@
+Namespace(cfg='experiments/300w/face_alignment_300w_hrnet_w18.yaml')
+{'AUTO_RESUME': False,
+ 'CUDNN': CfgNode({'BENCHMARK': True, 'DETERMINISTIC': False, 'ENABLED': True}),
+ 'DATASET': {'DATASET': '300W',
+             'FLIP': False,
+             'ROOT': './data/300w/images',
+             'ROT_FACTOR': 30,
+             'SCALE_FACTOR': 0.25,
+             'TESTSET': './data/300w/face_landmarks_300w_valid.csv',
+             'TRAINSET': './data/300w/face_landmarks_300w_train.csv'},
+ 'GPUS': (0, 1),
+ 'LOG_DIR': 'log',
+ 'MODEL': {'EXTRA': {'FINAL_CONV_KERNEL': 1,
+                     'PRETRAINED_LAYERS': ['*'],
+                     'STAGE2': {'BLOCK': 'BASIC',
+                                'FUSE_METHOD': 'SUM',
+                                'NUM_BLOCKS': [4, 4],
+                                'NUM_BRANCHES': 2,
+                                'NUM_CHANNELS': [18, 36],
+                                'NUM_MODULES': 1},
+                     'STAGE3': {'BLOCK': 'BASIC',
+                                'FUSE_METHOD': 'SUM',
+                                'NUM_BLOCKS': [4, 4, 4],
+                                'NUM_BRANCHES': 3,
+                                'NUM_CHANNELS': [18, 36, 72],
+                                'NUM_MODULES': 4},
+                     'STAGE4': {'BLOCK': 'BASIC',
+                                'FUSE_METHOD': 'SUM',
+                                'NUM_BLOCKS': [4, 4, 4, 4],
+                                'NUM_BRANCHES': 4,
+                                'NUM_CHANNELS': [18, 36, 72, 144],
+                                'NUM_MODULES': 3},
+                     'STEM_INPLANES': 64,
+                     'WITH_HEAD': True},
+           'HEATMAP_SIZE': [256, 128],
+           'IMAGE_SIZE': [1024, 512],
+           'INIT_WEIGHTS': True,
+           'NAME': 'hrnet',
+           'NUM_JOINTS': 96,
+           'PRETRAINED': 'hrnetv2_pretrained/hrnetv2_w18_imagenet_pretrained.pth',
+           'SIGMA': 1.0,
+           'TARGET_TYPE': 'Gaussian'},
+ 'OUTPUT_DIR': 'output',
+ 'PIN_MEMORY': True,
+ 'PRINT_FREQ': 50,
+ 'TEST': CfgNode({'BATCH_SIZE_PER_GPU': 2}),
+ 'TRAIN': {'BATCH_SIZE_PER_GPU': 2,
+           'BEGIN_EPOCH': 0,
+           'CHECKPOINT': '',
+           'END_EPOCH': 30,
+           'LR': 0.0001,
+           'LR_FACTOR': 0.1,
+           'LR_STEP': [10, 20],
+           'MOMENTUM': 0.0,
+           'NESTEROV': False,
+           'OPTIMIZER': 'adam',
+           'RESUME': True,
+           'SHUFFLE': True,
+           'WD': 0.0},
+ 'WORKERS': 0}
+=> init weights from normal distribution
+/public/home/zhaojh1/.conda/envs/pytorch/lib/python3.6/site-packages/torch/nn/_reduction.py:42: UserWarning: size_average and reduce args will be deprecated, please use reduction='mean' instead.
+  warnings.warn(warning.format(ret))
+Epoch: [0][0/77]	Time 14.081s (14.081s)	Speed 0.3 samples/s	Data 0.394s (0.394s)	Loss 0.00135 (0.00135)	
+Epoch: [0][50/77]	Time 1.000s (1.169s)	Speed 4.0 samples/s	Data 0.248s (0.261s)	Loss 0.00010 (0.00019)	
+Train Epoch 0 time:1.1984 loss:0.0002 nme:1636.5711
+Test Epoch 0 time:0.5225 loss:0.0012 nme:2279.6697 [008]:1.0000 [010]:1.0000
+=> saving checkpoint to output/300W/face_alignment_300w_hrnet_w18
+Epoch: [1][0/77]	Time 0.909s (0.909s)	Speed 4.4 samples/s	Data 0.216s (0.216s)	Loss 0.00010 (0.00010)	
+Epoch: [1][50/77]	Time 0.894s (0.924s)	Speed 4.5 samples/s	Data 0.266s (0.261s)	Loss 0.00009 (0.00010)	
+Train Epoch 1 time:0.9185 loss:0.0001 nme:187.1867
+Test Epoch 1 time:0.5400 loss:0.0012 nme:1836.9949 [008]:1.0000 [010]:1.0000
+=> saving checkpoint to output/300W/face_alignment_300w_hrnet_w18
+Epoch: [2][0/77]	Time 0.872s (0.872s)	Speed 4.6 samples/s	Data 0.249s (0.249s)	Loss 0.00009 (0.00009)	
+Epoch: [2][50/77]	Time 0.911s (0.933s)	Speed 4.4 samples/s	Data 0.275s (0.262s)	Loss 0.00009 (0.00009)	
+Train Epoch 2 time:0.9311 loss:0.0001 nme:21.8237
+Test Epoch 2 time:0.5236 loss:0.0010 nme:1418.5548 [008]:1.0000 [010]:1.0000
+=> saving checkpoint to output/300W/face_alignment_300w_hrnet_w18
+Epoch: [3][0/77]	Time 0.886s (0.886s)	Speed 4.5 samples/s	Data 0.261s (0.261s)	Loss 0.00009 (0.00009)	
+Epoch: [3][50/77]	Time 0.983s (0.924s)	Speed 4.1 samples/s	Data 0.251s (0.256s)	Loss 0.00009 (0.00009)	
+Train Epoch 3 time:0.9141 loss:0.0001 nme:13.6366
+Test Epoch 3 time:0.4824 loss:0.0009 nme:1276.1305 [008]:1.0000 [010]:1.0000
+=> saving checkpoint to output/300W/face_alignment_300w_hrnet_w18
+Epoch: [4][0/77]	Time 0.907s (0.907s)	Speed 4.4 samples/s	Data 0.249s (0.249s)	Loss 0.00008 (0.00008)	
+Epoch: [4][50/77]	Time 0.919s (0.925s)	Speed 4.4 samples/s	Data 0.247s (0.259s)	Loss 0.00008 (0.00008)	
+Train Epoch 4 time:0.9240 loss:0.0001 nme:11.1082
+Test Epoch 4 time:0.5288 loss:0.0008 nme:999.8917 [008]:1.0000 [010]:1.0000
+=> saving checkpoint to output/300W/face_alignment_300w_hrnet_w18
+Epoch: [5][0/77]	Time 0.885s (0.885s)	Speed 4.5 samples/s	Data 0.265s (0.265s)	Loss 0.00008 (0.00008)	
+Epoch: [5][50/77]	Time 0.892s (0.915s)	Speed 4.5 samples/s	Data 0.253s (0.254s)	Loss 0.00007 (0.00008)	
+Train Epoch 5 time:0.9123 loss:0.0001 nme:9.1168
+Test Epoch 5 time:0.5178 loss:0.0006 nme:275.9664 [008]:1.0000 [010]:1.0000
+=> saving checkpoint to output/300W/face_alignment_300w_hrnet_w18
+Epoch: [6][0/77]	Time 0.865s (0.865s)	Speed 4.6 samples/s	Data 0.258s (0.258s)	Loss 0.00007 (0.00007)	
+Epoch: [6][50/77]	Time 0.892s (0.850s)	Speed 4.5 samples/s	Data 0.213s (0.218s)	Loss 0.00006 (0.00007)	
+Train Epoch 6 time:0.8447 loss:0.0001 nme:7.9236
+Test Epoch 6 time:0.4494 loss:0.0004 nme:4.1238 [008]:1.0000 [010]:1.0000
+=> saving checkpoint to output/300W/face_alignment_300w_hrnet_w18
+Epoch: [7][0/77]	Time 0.898s (0.898s)	Speed 4.5 samples/s	Data 0.212s (0.212s)	Loss 0.00006 (0.00006)	
+Epoch: [7][50/77]	Time 0.814s (0.837s)	Speed 4.9 samples/s	Data 0.209s (0.210s)	Loss 0.00006 (0.00006)	
+Train Epoch 7 time:0.8383 loss:0.0001 nme:7.0990
+Test Epoch 7 time:0.4417 loss:0.0003 nme:3.4563 [008]:1.0000 [010]:0.8889
+=> saving checkpoint to output/300W/face_alignment_300w_hrnet_w18
+Epoch: [8][0/77]	Time 0.811s (0.811s)	Speed 4.9 samples/s	Data 0.210s (0.210s)	Loss 0.00005 (0.00005)	
+Epoch: [8][50/77]	Time 0.814s (0.842s)	Speed 4.9 samples/s	Data 0.210s (0.209s)	Loss 0.00005 (0.00005)	
+Train Epoch 8 time:0.8371 loss:0.0001 nme:6.6497
+Test Epoch 8 time:0.4668 loss:0.0002 nme:2.4032 [008]:1.0000 [010]:0.9444
+=> saving checkpoint to output/300W/face_alignment_300w_hrnet_w18
+Epoch: [9][0/77]	Time 0.858s (0.858s)	Speed 4.7 samples/s	Data 0.228s (0.228s)	Loss 0.00004 (0.00004)	
+Epoch: [9][50/77]	Time 0.837s (0.846s)	Speed 4.8 samples/s	Data 0.204s (0.211s)	Loss 0.00004 (0.00005)	
+Train Epoch 9 time:0.8410 loss:0.0000 nme:6.3930
+Test Epoch 9 time:0.4444 loss:0.0001 nme:3.7082 [008]:0.8889 [010]:0.8333
+=> saving checkpoint to output/300W/face_alignment_300w_hrnet_w18
+Epoch: [10][0/77]	Time 0.820s (0.820s)	Speed 4.9 samples/s	Data 0.183s (0.183s)	Loss 0.00004 (0.00004)	
+Epoch: [10][50/77]	Time 0.843s (0.854s)	Speed 4.7 samples/s	Data 0.207s (0.214s)	Loss 0.00004 (0.00004)	
+Train Epoch 10 time:0.8462 loss:0.0000 nme:6.2493
+Test Epoch 10 time:0.4475 loss:0.0001 nme:1.2488 [008]:0.8333 [010]:0.6667
+=> saving checkpoint to output/300W/face_alignment_300w_hrnet_w18
+Epoch: [11][0/77]	Time 0.824s (0.824s)	Speed 4.9 samples/s	Data 0.194s (0.194s)	Loss 0.00004 (0.00004)	
+Epoch: [11][50/77]	Time 0.798s (0.852s)	Speed 5.0 samples/s	Data 0.184s (0.214s)	Loss 0.00004 (0.00004)	
+Train Epoch 11 time:0.8469 loss:0.0000 nme:6.2413
+Test Epoch 11 time:0.4621 loss:0.0000 nme:1.1715 [008]:0.8333 [010]:0.6111
+=> saving checkpoint to output/300W/face_alignment_300w_hrnet_w18
+Epoch: [12][0/77]	Time 0.909s (0.909s)	Speed 4.4 samples/s	Data 0.222s (0.222s)	Loss 0.00003 (0.00003)	
+Epoch: [12][50/77]	Time 0.817s (0.843s)	Speed 4.9 samples/s	Data 0.205s (0.212s)	Loss 0.00004 (0.00004)	
+Train Epoch 12 time:0.8385 loss:0.0000 nme:6.2392
+Test Epoch 12 time:0.4457 loss:0.0000 nme:1.1911 [008]:0.8333 [010]:0.6667
+=> saving checkpoint to output/300W/face_alignment_300w_hrnet_w18
+Epoch: [13][0/77]	Time 0.859s (0.859s)	Speed 4.7 samples/s	Data 0.245s (0.245s)	Loss 0.00004 (0.00004)	
+Epoch: [13][50/77]	Time 0.844s (0.845s)	Speed 4.7 samples/s	Data 0.210s (0.211s)	Loss 0.00004 (0.00004)	
+Train Epoch 13 time:0.8414 loss:0.0000 nme:6.2362
+Test Epoch 13 time:0.4601 loss:0.0000 nme:1.1085 [008]:0.8333 [010]:0.6111
+=> saving checkpoint to output/300W/face_alignment_300w_hrnet_w18
+Epoch: [14][0/77]	Time 0.827s (0.827s)	Speed 4.8 samples/s	Data 0.220s (0.220s)	Loss 0.00004 (0.00004)	
+Epoch: [14][50/77]	Time 0.854s (0.839s)	Speed 4.7 samples/s	Data 0.207s (0.207s)	Loss 0.00004 (0.00004)	
+Train Epoch 14 time:0.8378 loss:0.0000 nme:6.2653
+Test Epoch 14 time:0.4525 loss:0.0000 nme:1.0796 [008]:0.8333 [010]:0.6111
+=> saving checkpoint to output/300W/face_alignment_300w_hrnet_w18
+Epoch: [15][0/77]	Time 0.786s (0.786s)	Speed 5.1 samples/s	Data 0.181s (0.181s)	Loss 0.00004 (0.00004)	
+Epoch: [15][50/77]	Time 0.846s (0.842s)	Speed 4.7 samples/s	Data 0.207s (0.210s)	Loss 0.00004 (0.00004)	
+Train Epoch 15 time:0.8416 loss:0.0000 nme:6.3169
+Test Epoch 15 time:0.4700 loss:0.0000 nme:1.2676 [008]:0.7222 [010]:0.6667
+=> saving checkpoint to output/300W/face_alignment_300w_hrnet_w18
+Epoch: [16][0/77]	Time 0.823s (0.823s)	Speed 4.9 samples/s	Data 0.211s (0.211s)	Loss 0.00004 (0.00004)	
+Epoch: [16][50/77]	Time 0.874s (0.843s)	Speed 4.6 samples/s	Data 0.214s (0.210s)	Loss 0.00003 (0.00004)	
+Train Epoch 16 time:0.8377 loss:0.0000 nme:6.3133
+Test Epoch 16 time:0.4566 loss:0.0000 nme:1.0813 [008]:0.8333 [010]:0.6111
+=> saving checkpoint to output/300W/face_alignment_300w_hrnet_w18
+Epoch: [17][0/77]	Time 0.838s (0.838s)	Speed 4.8 samples/s	Data 0.206s (0.206s)	Loss 0.00003 (0.00003)	
+Epoch: [17][50/77]	Time 0.817s (0.839s)	Speed 4.9 samples/s	Data 0.210s (0.206s)	Loss 0.00003 (0.00003)	
+Train Epoch 17 time:0.8353 loss:0.0000 nme:6.2751
+Test Epoch 17 time:0.4481 loss:0.0000 nme:1.1385 [008]:0.8333 [010]:0.6111
+=> saving checkpoint to output/300W/face_alignment_300w_hrnet_w18
+Epoch: [18][0/77]	Time 0.785s (0.785s)	Speed 5.1 samples/s	Data 0.183s (0.183s)	Loss 0.00003 (0.00003)	
+Epoch: [18][50/77]	Time 0.820s (0.834s)	Speed 4.9 samples/s	Data 0.210s (0.203s)	Loss 0.00003 (0.00003)	
+Train Epoch 18 time:0.8309 loss:0.0000 nme:6.3168
+Test Epoch 18 time:0.4317 loss:0.0000 nme:1.0554 [008]:0.7778 [010]:0.5556
+=> saving checkpoint to output/300W/face_alignment_300w_hrnet_w18
+Epoch: [19][0/77]	Time 0.788s (0.788s)	Speed 5.1 samples/s	Data 0.181s (0.181s)	Loss 0.00003 (0.00003)	
+Epoch: [19][50/77]	Time 0.813s (0.838s)	Speed 4.9 samples/s	Data 0.207s (0.210s)	Loss 0.00003 (0.00003)	
+Train Epoch 19 time:0.8353 loss:0.0000 nme:6.3493
+Test Epoch 19 time:0.4515 loss:0.0000 nme:1.0065 [008]:0.8333 [010]:0.5556
+=> saving checkpoint to output/300W/face_alignment_300w_hrnet_w18
+Epoch: [20][0/77]	Time 0.885s (0.885s)	Speed 4.5 samples/s	Data 0.206s (0.206s)	Loss 0.00003 (0.00003)	
+Epoch: [20][50/77]	Time 0.858s (0.845s)	Speed 4.7 samples/s	Data 0.228s (0.208s)	Loss 0.00003 (0.00003)	
+Train Epoch 20 time:0.8462 loss:0.0000 nme:6.3777
+Test Epoch 20 time:0.4602 loss:0.0000 nme:1.0509 [008]:0.7778 [010]:0.5556
+=> saving checkpoint to output/300W/face_alignment_300w_hrnet_w18
+Epoch: [21][0/77]	Time 0.852s (0.852s)	Speed 4.7 samples/s	Data 0.212s (0.212s)	Loss 0.00003 (0.00003)	
+Epoch: [21][50/77]	Time 0.964s (0.872s)	Speed 4.2 samples/s	Data 0.249s (0.231s)	Loss 0.00003 (0.00003)	
+Train Epoch 21 time:0.8684 loss:0.0000 nme:6.3415
+Test Epoch 21 time:0.4855 loss:0.0000 nme:1.0628 [008]:0.7778 [010]:0.5556
+=> saving checkpoint to output/300W/face_alignment_300w_hrnet_w18
+Epoch: [22][0/77]	Time 0.824s (0.824s)	Speed 4.9 samples/s	Data 0.222s (0.222s)	Loss 0.00004 (0.00004)	
+Epoch: [22][50/77]	Time 0.879s (0.870s)	Speed 4.6 samples/s	Data 0.233s (0.229s)	Loss 0.00003 (0.00003)	
+Train Epoch 22 time:0.8640 loss:0.0000 nme:6.3674
+Test Epoch 22 time:0.4841 loss:0.0000 nme:1.0729 [008]:0.7222 [010]:0.5556
+=> saving checkpoint to output/300W/face_alignment_300w_hrnet_w18
+Epoch: [23][0/77]	Time 0.848s (0.848s)	Speed 4.7 samples/s	Data 0.194s (0.194s)	Loss 0.00003 (0.00003)	
+Epoch: [23][50/77]	Time 0.910s (0.872s)	Speed 4.4 samples/s	Data 0.259s (0.233s)	Loss 0.00003 (0.00003)	
+Train Epoch 23 time:0.8707 loss:0.0000 nme:6.3638
+Test Epoch 23 time:0.4596 loss:0.0000 nme:1.0588 [008]:0.7778 [010]:0.5556
+=> saving checkpoint to output/300W/face_alignment_300w_hrnet_w18
+Epoch: [24][0/77]	Time 0.801s (0.801s)	Speed 5.0 samples/s	Data 0.196s (0.196s)	Loss 0.00003 (0.00003)	
+Epoch: [24][50/77]	Time 0.853s (0.871s)	Speed 4.7 samples/s	Data 0.242s (0.233s)	Loss 0.00003 (0.00003)	
+Train Epoch 24 time:0.8632 loss:0.0000 nme:6.3966
+Test Epoch 24 time:0.4717 loss:0.0000 nme:1.0581 [008]:0.7222 [010]:0.5556
+=> saving checkpoint to output/300W/face_alignment_300w_hrnet_w18
+Epoch: [25][0/77]	Time 0.823s (0.823s)	Speed 4.9 samples/s	Data 0.222s (0.222s)	Loss 0.00004 (0.00004)	
+Epoch: [25][50/77]	Time 0.876s (0.862s)	Speed 4.6 samples/s	Data 0.223s (0.224s)	Loss 0.00003 (0.00003)	
+Train Epoch 25 time:0.8589 loss:0.0000 nme:6.3184
+Test Epoch 25 time:0.4648 loss:0.0000 nme:1.0691 [008]:0.7778 [010]:0.5556
+=> saving checkpoint to output/300W/face_alignment_300w_hrnet_w18
+Epoch: [26][0/77]	Time 0.856s (0.856s)	Speed 4.7 samples/s	Data 0.207s (0.207s)	Loss 0.00003 (0.00003)	
+Epoch: [26][50/77]	Time 0.955s (0.935s)	Speed 4.2 samples/s	Data 0.298s (0.276s)	Loss 0.00003 (0.00003)	
+Train Epoch 26 time:0.9417 loss:0.0000 nme:6.3641
+Test Epoch 26 time:0.4750 loss:0.0000 nme:1.0566 [008]:0.7222 [010]:0.5556
+=> saving checkpoint to output/300W/face_alignment_300w_hrnet_w18
+Epoch: [27][0/77]	Time 0.841s (0.841s)	Speed 4.8 samples/s	Data 0.241s (0.241s)	Loss 0.00003 (0.00003)	
+Epoch: [27][50/77]	Time 0.967s (0.923s)	Speed 4.1 samples/s	Data 0.302s (0.272s)	Loss 0.00003 (0.00003)	
+Train Epoch 27 time:0.9333 loss:0.0000 nme:6.3652
+Test Epoch 27 time:0.5061 loss:0.0000 nme:1.0737 [008]:0.7222 [010]:0.5556
+=> saving checkpoint to output/300W/face_alignment_300w_hrnet_w18
+Epoch: [28][0/77]	Time 0.902s (0.902s)	Speed 4.4 samples/s	Data 0.251s (0.251s)	Loss 0.00003 (0.00003)	
+Epoch: [28][50/77]	Time 0.925s (0.894s)	Speed 4.3 samples/s	Data 0.265s (0.250s)	Loss 0.00003 (0.00003)	
+Train Epoch 28 time:0.8855 loss:0.0000 nme:6.3358
+Test Epoch 28 time:0.4968 loss:0.0000 nme:1.0476 [008]:0.7222 [010]:0.5556
+=> saving checkpoint to output/300W/face_alignment_300w_hrnet_w18
+Epoch: [29][0/77]	Time 0.899s (0.899s)	Speed 4.4 samples/s	Data 0.244s (0.244s)	Loss 0.00003 (0.00003)	
+Epoch: [29][50/77]	Time 0.858s (0.882s)	Speed 4.7 samples/s	Data 0.256s (0.242s)	Loss 0.00003 (0.00003)	
+Train Epoch 29 time:0.8811 loss:0.0000 nme:6.3781
+Test Epoch 29 time:0.4720 loss:0.0000 nme:1.0596 [008]:0.7778 [010]:0.5556
+=> saving checkpoint to output/300W/face_alignment_300w_hrnet_w18
+saving final model state to output/300W/face_alignment_300w_hrnet_w18/final_state.pth
