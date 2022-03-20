@@ -1,5 +1,5 @@
-GPUS: (0, )
-WORKERS: 4
+GPUS: (0, 1)
+WORKERS: 0
 PRINT_FREQ: 50
 
 DATASET:
@@ -17,10 +17,10 @@ MODEL:
   PRETRAINED: 'hrnetv2_pretrained/hrnetv2_w18_imagenet_pretrained.pth'
   SIGMA: 1.0 
   IMAGE_SIZE:
-    - 512
+    - 1024
     - 512
   HEATMAP_SIZE:
-    - 128
+    - 256
     - 128
   EXTRA:
     FINAL_CONV_KERNEL: 1
@@ -67,12 +67,12 @@ TRAIN:
   BATCH_SIZE_PER_GPU: 2
   SHUFFLE: true
   BEGIN_EPOCH: 0
-  END_EPOCH: 100
+  END_EPOCH: 30
   RESUME: true
   OPTIMIZER: 'adam'
   LR: 0.0001
   WD: 0.0
-  LR_STEP: [60, 90]
+  LR_STEP: [10, 20]
   MOMENTUM: 0.0
   NESTEROV: false
 TEST:

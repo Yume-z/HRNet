@@ -59,17 +59,20 @@ def train(config, train_loader, model, critertion, optimizer,
         data_time.update(time.time()-end)
 
         # compute the output
+        # print("input", inp)
         output = model(inp)
         target = target.cuda(non_blocking=True)
-
+        # print("out", output.size(), target.size())
         loss = critertion(output, target)
-
+        # print("loss", loss)
         # NME
         score_map = output.data.cpu()
-        preds = decode_preds(score_map, meta['center'], meta['scale'], [128, 128])
-
-        # if epoch > 50:
+        # print("score_map", score_map)
+        preds = decode_preds(score_map, meta['center'], meta['scale'], [128, 256])
+        # print("preds",preds)
+        # if epoch > 90:
         #     print(f"train_pred:{preds}.")
+
         nme_batch = compute_nme(preds, meta)
         nme_batch_sum = nme_batch_sum + np.sum(nme_batch)
         nme_count = nme_count + preds.size(0)
@@ -133,9 +136,9 @@ def validate(config, val_loader, model, criterion, epoch, writer_dict):
             # loss
             loss = criterion(output, target)
 
-            preds = decode_preds(score_map, meta['center'], meta['scale'], [128, 128])
-            # if epoch > 40:
-            #     print(f"val_pred:{preds}.")
+            preds = decode_preds(score_map, meta['center'], meta['scale'], [128, 256])
+            if epoch > 100:
+                print(f"val_pred:{preds}.")
 
             # NME
             nme_temp = compute_nme(preds, meta)
@@ -196,7 +199,7 @@ def inference(config, data_loader, model):
             data_time.update(time.time() - end)
             output = model(inp)
             score_map = output.data.cpu()
-            preds = decode_preds(score_map, meta['center'], meta['scale'], [64, 64])
+            preds = decode_preds(score_map, meta['center'], meta['scale'], [128, 256])
 
             # NME
             nme_temp = compute_nme(preds, meta)

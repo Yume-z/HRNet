@@ -1,6 +1,6 @@
 #!/bin/bash
 #SBATCH --job-name=hr
-#SBATCH --partition=debug
+#SBATCH --partition=normal
 #SBATCH -N 1
 #SBATCH --gres=gpu:2
 #SBATCH --mail-type=none

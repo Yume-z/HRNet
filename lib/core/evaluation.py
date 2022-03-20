@@ -57,7 +57,7 @@ def compute_nme(preds, meta):
         #     raise ValueError('Number of landmarks is wrong')
 
         # rmse[i] = np.sum(np.linalg.norm(pts_pred - pts_gt, axis=1)) / L
-        rmse[i] = np.sum(np.power(np.linalg.norm(pts_pred - pts_gt, axis=1), 2)) / L / 1000 # mse
+        rmse[i] = np.sum(np.power(np.linalg.norm(pts_pred - pts_gt, axis=1), 2)) / L / 100 # mse
 
         # print(f"pts_pred:{pts_pred},pts_gt:{pts_gt},loss{rmse[i]}.")
 
@@ -67,7 +67,7 @@ def compute_nme(preds, meta):
 
 def decode_preds(output, center, scale, res):
     coords = get_preds(output)  # float type
-
+    # print("coords", coords)
     coords = coords.cpu()
     # pose-processing
     for n in range(coords.size(0)):
@@ -87,5 +87,6 @@ def decode_preds(output, center, scale, res):
 
     if preds.dim() < 3:
         preds = preds.view(1, preds.size())
+    # print("coord_preds", preds)
 
     return preds

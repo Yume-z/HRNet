@@ -97,7 +97,7 @@ def main():
                              is_train=True),
         batch_size=config.TRAIN.BATCH_SIZE_PER_GPU*len(gpus),
         shuffle=config.TRAIN.SHUFFLE,
-        num_workers=config.WORKERS,
+        num_workers=0,
         pin_memory=config.PIN_MEMORY)
 
     val_loader = DataLoader(
@@ -110,10 +110,12 @@ def main():
     )
 
     for epoch in range(last_epoch, config.TRAIN.END_EPOCH):
-        lr_scheduler.step()
+        # lr_scheduler.step()
 
         function.train(config, train_loader, model, criterion,
                        optimizer, epoch, writer_dict)
+
+        lr_scheduler.step()
 
         # evaluate
         nme, predictions = function.validate(config, val_loader, model,

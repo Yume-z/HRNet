@@ -39,8 +39,8 @@ class Face300W(data.Dataset):
         # load annotations
         self.landmarks_frame = pd.read_csv(self.csv_file)
 
-        self.mean = np.array([0.124, 0.114, 0.110], dtype=np.float32)
-        self.std = np.array([0.179, 0.165, 0.161], dtype=np.float32)
+        self.mean = np.array([0.158, 0.156, 0.163], dtype=np.float32)
+        self.std = np.array([0.148, 0.148, 0.149], dtype=np.float32)
 
     def __len__(self):
         return len(self.landmarks_frame)
@@ -67,11 +67,11 @@ class Face300W(data.Dataset):
         # print('image', imggg.shape)
 
         r = 0
-        if self.is_train:
-            scale = scale * (random.uniform(1 - self.scale_factor,
-                                            1 + self.scale_factor))
-            r = random.uniform(-self.rot_factor, self.rot_factor) \
-                if random.random() <= 0.6 else 0
+        # if self.is_train:
+        #     scale = scale * (random.uniform(1 - self.scale_factor,
+        #                                     1 + self.scale_factor))
+        #     r = random.uniform(-self.rot_factor, self.rot_factor) \
+        #         if random.random() <= 0.6 else 0
             # if random.random() <= 0.5 and self.flip:
             #     img = np.fliplr(img)
             #     pts = fliplr_joints(pts, width=img.shape[1], dataset='300W')
@@ -88,12 +88,19 @@ class Face300W(data.Dataset):
                                                scale, self.output_size, rot=r)
                 target[i] = generate_target(target[i], tpts[i]-1, self.sigma,
                                             label_type=self.label_type)
+        # print("tpts", tpts)
+        # print("target", target)
         img = img.astype(np.float32)
-        # print('image', img.shape)
+        # print('image', img)
         img = (img/255.0 - self.mean) / self.std
+        # img = img / 255.0
         img = img.transpose([2, 0, 1])
+        # print('image', img)
         target = torch.Tensor(target)
+
+        # target = target.permute([0, 2, 1])
         # print('target', target.shape)
+
         tpts = torch.Tensor(tpts)
         # print('tpts', tpts.shape)
         center = torch.Tensor(center)
@@ -101,6 +108,7 @@ class Face300W(data.Dataset):
 
         meta = {'index': idx, 'center': center, 'scale': scale,
                 'pts': torch.Tensor(pts), 'tpts': tpts}
+        # print("meta", meta)
 
         return img, target, meta
 
