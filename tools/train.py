@@ -61,7 +61,7 @@ def main():
     model = nn.DataParallel(model, device_ids=gpus).cuda()
 
     # loss
-    criterion = torch.nn.MSELoss(size_average=True).cuda()
+    criterion = torch.nn.MSELoss(reduction='mean').cuda()
 
     optimizer = utils.get_optimizer(config, model)
     best_nme = 100
