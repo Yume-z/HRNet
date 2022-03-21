@@ -5,15 +5,15 @@
 # ------------------------------------------------------------------------------
 
 
-from .face300w import Face300W
+from .Xray import xRAY
 
-__all__ = ['Face300W']
+__all__ = ['xRAY']
 
 
 def get_dataset(config):
 
-    if config.DATASET.DATASET == '300W':
-        return Face300W
+    if config.DATASET.DATASET == 'Xray':
+        return xRAY
 
     else:
         raise NotImplemented()

@@ -7,4 +7,4 @@
 #SBATCH --mail-user=zhaojh1@shanghaitech.edu.cn
 #SBATCH --output=hr.out
 #SBATCH --error=hr.err
-python tools/train.py --cfg experiments/300w/face_alignment_300w_hrnet_w18.yaml
+python tools/train.py --cfg experiments/hrnet_w18.yaml

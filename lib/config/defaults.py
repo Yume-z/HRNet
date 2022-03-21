@@ -33,10 +33,10 @@ _C.MODEL = CN()
 _C.MODEL.NAME = 'hrnet'
 _C.MODEL.INIT_WEIGHTS = True
 _C.MODEL.PRETRAINED = ''
-_C.MODEL.NUM_JOINTS = 17
+_C.MODEL.NUM_JOINTS = 96
 _C.MODEL.TARGET_TYPE = 'Gaussian'
-_C.MODEL.IMAGE_SIZE = [256, 256]  # width * height
-_C.MODEL.HEATMAP_SIZE = [64, 64]  # width * height
+_C.MODEL.IMAGE_SIZE = [512, 1024]  # width * height
+_C.MODEL.HEATMAP_SIZE = [128, 256]  # width * height
 _C.MODEL.SIGMA = 1.5
 _C.MODEL.EXTRA = CN()
 
@@ -100,14 +100,14 @@ _C.TRAIN.END_EPOCH = 60
 _C.TRAIN.RESUME = True
 _C.TRAIN.CHECKPOINT = ''
 
-_C.TRAIN.BATCH_SIZE_PER_GPU = 16
+_C.TRAIN.BATCH_SIZE_PER_GPU = 2
 _C.TRAIN.SHUFFLE = True
 
 # testing
 _C.TEST = CN()
 
 # size of images for each device
-_C.TEST.BATCH_SIZE_PER_GPU = 32
+_C.TEST.BATCH_SIZE_PER_GPU = 2
 
 
 def update_config(cfg, args):

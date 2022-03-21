@@ -1,12 +1,12 @@
-GPUS: (0, )
+GPUS: (0, 1)
 WORKERS: 0
 PRINT_FREQ: 50
 
 DATASET:
-  DATASET: 300W
-  ROOT: './data/300w/images'
-  TRAINSET: './data/300w/face_landmarks_300w_train.csv'
-  TESTSET: './data/300w/face_landmarks_300w_test.csv'
+  DATASET: Xray
+  ROOT: './data/images'
+  TRAINSET: './data/train.csv'
+  TESTSET: './data/test.csv'
   FLIP: false
   SCALE_FACTOR: 0.25
   ROT_FACTOR: 30
@@ -15,7 +15,7 @@ MODEL:
   NUM_JOINTS: 96
   INIT_WEIGHTS: true
   PRETRAINED: 'hrnetv2_pretrained/hrnetv2_w18_imagenet_pretrained.pth'
-  SIGMA: 1.0 
+  SIGMA: 1.0
   IMAGE_SIZE:
     - 1024
     - 512
@@ -67,7 +67,7 @@ TRAIN:
   BATCH_SIZE_PER_GPU: 2
   SHUFFLE: true
   BEGIN_EPOCH: 0
-  END_EPOCH: 40
+  END_EPOCH: 2
   RESUME: true
   OPTIMIZER: 'adam'
   LR: 0.0001

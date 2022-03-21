@@ -13,10 +13,11 @@ import pandas as pd
 from PIL import Image
 import numpy as np
 
-from ..utils.transforms import fliplr_joints, crop, generate_target, transform_pixel
+from ..utils.transforms import generate_target, transform_pixel
+#from ..utils.transforms import fliplr_joints, crop, generate_target, transform_pixel
 
 
-class Face300W(data.Dataset):
+class xRAY(data.Dataset):
 
     def __init__(self, cfg, is_train=True, transform=None):
         # specify annotation file for dataset

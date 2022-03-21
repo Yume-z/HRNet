@@ -204,14 +204,14 @@ def inference(config, data_loader, model):
             score_map = output.data.cpu()
             preds = decode_preds(score_map, meta['center'], meta['scale'], [128, 256])
 
-            # visualize if don't need visulize, comment
-            for j, b in enumerate(preds.tolist()):
-                p = []
-                for item in b:
-                    p.append((int(item[0]), int(item[1])))
-                n = meta['name'][j]
-                tp[n] = p
-                j += 1
+            # # visualize if don't need visulize, comment
+            # for j, b in enumerate(preds.tolist()):
+            #     p = []
+            #     for item in b:
+            #         p.append((int(item[0]), int(item[1])))
+            #     n = meta['name'][j]
+            #     tp[n] = p
+            #     j += 1
 
 
             # NME
@@ -231,18 +231,19 @@ def inference(config, data_loader, model):
             batch_time.update(time.time() - end)
             end = time.time()
 
-    # visualize if don't need visulize, comment
-    for file in tp:
-        path1 = '/public/home/zhaojh1/git_main/HRNet/visual_data/'
-        path2 = '/public/home/zhaojh1/git_main/HRNet/visual/'
-        image = cv2.imread(os.path.join(path1, file))
-        point_size = 1
-        point_color = (0, 0, 255)  # BGR
-        thickness = 4  # 可以为 0 、4、8
-        lp = tp[file]
-        for point in lp:
-            cv2.circle(image, point, point_size, point_color, thickness)
-            cv2.imwrite(f"{os.path.join(path2, file[0:5])}.png", image, [int(cv2.IMWRITE_PNG_COMPRESSION), 9])
+    # # visualize if don't need visulize, comment
+    # for file in tp:
+    #     path1 = '/public/home/zhaojh1/git_main/HRNet/visual_data/'
+    #     path2 = '/public/home/zhaojh1/git_main/HRNet/visual/'
+    #     image = cv2.imread(os.path.join(path1, file))
+    #     point_size = 1
+    #     point_color = (0, 0, 255)  # BGR
+    #     thickness = 4  # 可以为 0 、4、8
+    #     lp = tp[file]
+    #     for point in lp:
+    #         cv2.circle(image, point, point_size, point_color, thickness)
+    #         cv2.imwrite(f"{os.path.join(path2, file[0:5])}.png", image, [int(cv2.IMWRITE_PNG_COMPRESSION), 9])
+
 
     # for root, dirs, files in os.walk('/public/home/zhaojh1/git_main/HRNet/visual_data/', True):
     #     for file in files:
