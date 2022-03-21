@@ -47,3 +47,9 @@ log/
 
 *.out
 *.err
+*.pth
+
+*.png
+*.jpg
+visual/
+visual_data

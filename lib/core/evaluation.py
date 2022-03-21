@@ -41,6 +41,14 @@ def compute_nme(preds, meta):
     N = preds.shape[0]
     L = preds.shape[1]
     rmse = np.zeros(N)
+    SMAPE = np.zeros(N)
+
+    # visualize
+    # for b in preds.tolist():
+    #     p = []
+    #     for item in b:
+    #         p.append( ( int(item[0]), int(item[1]) ) )
+    #
 
     for i in range(N):
         pts_pred, pts_gt = preds[i, ], target[i, ]
@@ -57,12 +65,14 @@ def compute_nme(preds, meta):
         #     raise ValueError('Number of landmarks is wrong')
 
         # rmse[i] = np.sum(np.linalg.norm(pts_pred - pts_gt, axis=1)) / L
-        rmse[i] = np.sum(np.power(np.linalg.norm(pts_pred - pts_gt, axis=1), 2)) / L / 100 # mse
-
+        rmse[i] = np.sum(np.power(np.linalg.norm(pts_pred - pts_gt, axis=1), 2)) / L / 10 # mse
+        #accuracy
+        # SMAPE[i] = (np.sum(np.linalg.norm(pts_pred - pts_gt, axis=1) / (np.linalg.norm(pts_pred, axis=1) + (np.linalg.norm(pts_gt, axis=1))))) * 2 * 100 / L  evaluate angle
         # print(f"pts_pred:{pts_pred},pts_gt:{pts_gt},loss{rmse[i]}.")
 
 
     return rmse
+    # return SMAPE
 
 
 def decode_preds(output, center, scale, res):

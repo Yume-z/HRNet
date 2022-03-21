@@ -14,6 +14,9 @@ import logging
 import torch
 import numpy as np
 
+import cv2
+import os
+
 from .evaluation import decode_preds, compute_nme
 
 logger = logging.getLogger(__name__)
@@ -21,6 +24,7 @@ logger = logging.getLogger(__name__)
 
 class AverageMeter(object):
     """Computes and stores the average and current value"""
+
     def __init__(self):
         self.val = 0
         self.avg = 0
@@ -43,7 +47,6 @@ class AverageMeter(object):
 
 def train(config, train_loader, model, critertion, optimizer,
           epoch, writer_dict):
-
     batch_time = AverageMeter()
     data_time = AverageMeter()
     losses = AverageMeter()
@@ -56,7 +59,7 @@ def train(config, train_loader, model, critertion, optimizer,
 
     for i, (inp, target, meta) in enumerate(train_loader):
         # measure data time
-        data_time.update(time.time()-end)
+        data_time.update(time.time() - end)
 
         # compute the output
         # print("input", inp)
@@ -84,16 +87,16 @@ def train(config, train_loader, model, critertion, optimizer,
 
         losses.update(loss.item(), inp.size(0))
 
-        batch_time.update(time.time()-end)
+        batch_time.update(time.time() - end)
         if i % config.PRINT_FREQ == 0:
             msg = 'Epoch: [{0}][{1}/{2}]\t' \
                   'Time {batch_time.val:.3f}s ({batch_time.avg:.3f}s)\t' \
                   'Speed {speed:.1f} samples/s\t' \
                   'Data {data_time.val:.3f}s ({data_time.avg:.3f}s)\t' \
                   'Loss {loss.val:.5f} ({loss.avg:.5f})\t'.format(
-                      epoch, i, len(train_loader), batch_time=batch_time,
-                      speed=inp.size(0)/batch_time.val,
-                      data_time=data_time, loss=losses)
+                epoch, i, len(train_loader), batch_time=batch_time,
+                speed=inp.size(0) / batch_time.val,
+                data_time=data_time, loss=losses)
             logger.info(msg)
 
             if writer_dict:
@@ -104,7 +107,7 @@ def train(config, train_loader, model, critertion, optimizer,
 
         end = time.time()
     nme = nme_batch_sum / nme_count
-    msg = 'Train Epoch {} time:{:.4f} loss:{:.4f} nme:{:.4f}'\
+    msg = 'Train Epoch {} time:{:.4f} loss:{:.4f} nme:{:.4f}' \
         .format(epoch, batch_time.avg, losses.avg, nme)
     logger.info(msg)
 
@@ -193,13 +196,23 @@ def inference(config, data_loader, model):
     count_failure_008 = 0
     count_failure_010 = 0
     end = time.time()
-
+    tp = {}
     with torch.no_grad():
         for i, (inp, target, meta) in enumerate(data_loader):
             data_time.update(time.time() - end)
             output = model(inp)
             score_map = output.data.cpu()
             preds = decode_preds(score_map, meta['center'], meta['scale'], [128, 256])
+
+            # visualize if don't need visulize, comment
+            for j, b in enumerate(preds.tolist()):
+                p = []
+                for item in b:
+                    p.append((int(item[0]), int(item[1])))
+                n = meta['name'][j]
+                tp[n] = p
+                j += 1
+
 
             # NME
             nme_temp = compute_nme(preds, meta)
@@ -218,6 +231,31 @@ def inference(config, data_loader, model):
             batch_time.update(time.time() - end)
             end = time.time()
 
+    # visualize if don't need visulize, comment
+    for file in tp:
+        path1 = '/public/home/zhaojh1/git_main/HRNet/visual_data/'
+        path2 = '/public/home/zhaojh1/git_main/HRNet/visual/'
+        image = cv2.imread(os.path.join(path1, file))
+        point_size = 1
+        point_color = (0, 0, 255)  # BGR
+        thickness = 4  # 可以为 0 、4、8
+        lp = tp[file]
+        for point in lp:
+            cv2.circle(image, point, point_size, point_color, thickness)
+            cv2.imwrite(f"{os.path.join(path2, file[0:5])}.png", image, [int(cv2.IMWRITE_PNG_COMPRESSION), 9])
+
+    # for root, dirs, files in os.walk('/public/home/zhaojh1/git_main/HRNet/visual_data/', True):
+    #     for file in files:
+    #         image = cv2.imread(os.path.join(root, file))  # 读取文件名对应的图片
+    #         point_size = 1
+    #         point_color = (0, 0, 255)  # BGR
+    #         thickness = 4  # 可以为 0 、4、8
+    #         j = 0
+    #         for point in tp[i]:
+    #             cv2.circle(image, point, point_size, point_color, thickness)
+    #             cv2.imwrite(f"/public/home/zhaojh1/git_main/HRNet/visual/{file}.png", image, [int(cv2.IMWRITE_PNG_COMPRESSION), 9])
+    #         j += 1
+
     nme = nme_batch_sum / nme_count
     failure_008_rate = count_failure_008 / nme_count
     failure_010_rate = count_failure_010 / nme_count
@@ -228,6 +266,3 @@ def inference(config, data_loader, model):
     logger.info(msg)
 
     return nme, predictions
-
-
-

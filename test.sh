@@ -2,7 +2,7 @@
 #SBATCH --job-name=hr
 #SBATCH --partition=debug
 #SBATCH -N 1
-#SBATCH --gres=gpu:2
+#SBATCH --gres=gpu:1
 #SBATCH --mail-type=none
 #SBATCH --mail-user=zhaojh1@shanghaitech.edu.cn
 #SBATCH --output=hr.out

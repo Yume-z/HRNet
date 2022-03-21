@@ -106,8 +106,10 @@ class Face300W(data.Dataset):
         center = torch.Tensor(center)
         # print('out', img.shape)
 
+        # meta = {'index': idx, 'center': center, 'scale': scale,
+        #         'pts': torch.Tensor(pts), 'tpts': tpts}
         meta = {'index': idx, 'center': center, 'scale': scale,
-                'pts': torch.Tensor(pts), 'tpts': tpts}
+                'pts': torch.Tensor(pts), 'tpts': tpts, 'name': self.landmarks_frame.iloc[idx, 0]}
         # print("meta", meta)
 
         return img, target, meta
