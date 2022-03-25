@@ -41,7 +41,8 @@ def compute_nme(preds, meta):
     N = preds.shape[0]
     L = preds.shape[1]
     rmse = np.zeros(N)
-    SMAPE = np.zeros(N)
+    a = np.zeros(N)
+    # SMAPE = np.zeros(N)
 
     # visualize
     # for b in preds.tolist():
@@ -53,6 +54,17 @@ def compute_nme(preds, meta):
     for i in range(N):
         pts_pred, pts_gt = preds[i, ], target[i, ]
 
+        d = np.linalg.norm(pts_pred - pts_gt, axis=1)
+        m = d.mean()
+        j = 0
+        for item in d:
+            if item/5 <= 1:
+                j += 1
+        a[i] = j/L
+
+        print(f"m:{m},a:{a[i]}.")
+        if a[i] <= 0.6:
+            print(meta['name'])
 
         # rmse[i] = np.sum(np.linalg.norm(pts_pred - pts_gt, axis=1)) / L
         rmse[i] = np.sum(np.power(np.linalg.norm(pts_pred - pts_gt, axis=1), 2)) / L / 10 # mse
@@ -61,7 +73,8 @@ def compute_nme(preds, meta):
         # print(f"pts_pred:{pts_pred},pts_gt:{pts_gt},loss{rmse[i]}.")
 
 
-    return rmse
+    # return rmse
+    return a, rmse
     # return SMAPE
 
 

@@ -64,7 +64,8 @@ def main():
     criterion = torch.nn.MSELoss(reduction='mean').cuda()
 
     optimizer = utils.get_optimizer(config, model)
-    best_nme = 100
+    # best_nme = 100
+    best_a = 0
     last_epoch = config.TRAIN.BEGIN_EPOCH
     if config.TRAIN.RESUME:
         model_state_file = os.path.join(final_output_dir,
@@ -118,18 +119,23 @@ def main():
         lr_scheduler.step()
 
         # evaluate
-        nme, predictions = function.validate(config, val_loader, model,
+        # nme, predictions = function.validate(config, val_loader, model,
+        #                                      criterion, epoch, writer_dict)
+        a, nme, predictions = function.validate(config, val_loader, model,
                                              criterion, epoch, writer_dict)
 
-        is_best = nme < best_nme
-        best_nme = min(nme, best_nme)
+        # is_best = nme < best_nme
+        # best_nme = min(nme, best_nme)
+        is_best = a > best_a
+        best_a = min(a, best_a)
 
         logger.info('=> saving checkpoint to {}'.format(final_output_dir))
         print("best:", is_best)
         utils.save_checkpoint(
             {"state_dict": model,
              "epoch": epoch + 1,
-             "best_nme": best_nme,
+             # "best_nme": best_nme,
+             "best_a": best_a,
              "optimizer": optimizer.state_dict(),
              }, predictions, is_best, final_output_dir, 'checkpoint_{}.pth'.format(epoch))
 

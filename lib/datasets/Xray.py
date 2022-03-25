@@ -13,6 +13,8 @@ import pandas as pd
 from PIL import Image
 import numpy as np
 
+import albumentations as A
+
 from ..utils.transforms import generate_target, transform_pixel
 #from ..utils.transforms import fliplr_joints, crop, generate_target, transform_pixel
 
@@ -66,6 +68,20 @@ class xRAY(data.Dataset):
         img = np.array(Image.open(image_path).convert('RGB'), dtype=np.float32)
         # imggg = np.array(Image.open(image_path).convert('L'), dtype=np.float32)
         # print('image', imggg.shape)
+
+        #data agumentation
+        # transform = A.Compose(
+        #     [A.Resize(width=512, height=1024),
+        #      A.RandomCrop(width=256, height=512),#whether predict as the point sequence? And output size need to change?Or just change input size
+        #      A.RandomBrightnessContrast(p=0.2),
+        #
+        #      ],
+        #     keypoint_params=A.KeypointParams(format='xy')
+        # )
+        # transformed = transform(image=img, keypoints=pts)
+        # img = transformed['image']
+        # pts = transformed['keypoints']# need transform back
+
 
         r = 0
         # if self.is_train:

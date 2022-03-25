@@ -54,6 +54,7 @@ def train(config, train_loader, model, critertion, optimizer,
     model.train()
     nme_count = 0
     nme_batch_sum = 0
+    a_batch_sum = 0
 
     end = time.time()
 
@@ -76,8 +77,9 @@ def train(config, train_loader, model, critertion, optimizer,
         # if epoch > 90:
         #     print(f"train_pred:{preds}.")
 
-        nme_batch = compute_nme(preds, meta)
+        a_temp, nme_batch = compute_nme(preds, meta)
         nme_batch_sum = nme_batch_sum + np.sum(nme_batch)
+        a_batch_sum += np.sum(a_temp)
         nme_count = nme_count + preds.size(0)
 
         # optimize
@@ -107,8 +109,9 @@ def train(config, train_loader, model, critertion, optimizer,
 
         end = time.time()
     nme = nme_batch_sum / nme_count
-    msg = 'Train Epoch {} time:{:.4f} loss:{:.4f} nme:{:.4f}' \
-        .format(epoch, batch_time.avg, losses.avg, nme)
+    a = a_batch_sum / nme_count
+    msg = 'Train Epoch {} time:{:.4f} loss:{:.4f} a:{:.4f}' \
+        .format(epoch, batch_time.avg, losses.avg, a)
     logger.info(msg)
 
 
@@ -128,6 +131,7 @@ def validate(config, val_loader, model, criterion, epoch, writer_dict):
     count_failure_008 = 0
     count_failure_010 = 0
     end = time.time()
+    a_batch_sum = 0
 
     with torch.no_grad():
         for i, (inp, target, meta) in enumerate(val_loader):
@@ -140,17 +144,19 @@ def validate(config, val_loader, model, criterion, epoch, writer_dict):
             loss = criterion(output, target)
 
             preds = decode_preds(score_map, meta['center'], meta['scale'], [128, 256])
-            if epoch > 100:
-                print(f"val_pred:{preds}.")
+            # if epoch > 30:
+            # compute_nme(preds, meta)
+            #     print(f"val_pred:{preds}.")
 
             # NME
-            nme_temp = compute_nme(preds, meta)
+            a_temp, nme_temp = compute_nme(preds, meta)
             # Failure Rate under different threshold
             failure_008 = (nme_temp > 0.08).sum()
             failure_010 = (nme_temp > 0.10).sum()
             count_failure_008 += failure_008
             count_failure_010 += failure_010
 
+            a_batch_sum += np.sum(a_temp)
             nme_batch_sum += np.sum(nme_temp)
             nme_count = nme_count + preds.size(0)
             for n in range(score_map.size(0)):
@@ -163,22 +169,33 @@ def validate(config, val_loader, model, criterion, epoch, writer_dict):
             end = time.time()
 
     nme = nme_batch_sum / nme_count
+    a = a_batch_sum / nme_count
     failure_008_rate = count_failure_008 / nme_count
     failure_010_rate = count_failure_010 / nme_count
 
-    msg = 'Test Epoch {} time:{:.4f} loss:{:.4f} nme:{:.4f} [008]:{:.4f} ' \
-          '[010]:{:.4f}'.format(epoch, batch_time.avg, losses.avg, nme,
+    # msg = 'Test Epoch {} time:{:.4f} loss:{:.4f} nme:{:.4f} [008]:{:.4f} ' \
+    #       '[010]:{:.4f}'.format(epoch, batch_time.avg, losses.avg, nme,
+    #                             failure_008_rate, failure_010_rate)
+    msg = 'Test Epoch {} time:{:.4f} loss:{:.4f} a:{:.4f} [008]:{:.4f} ' \
+          '[010]:{:.4f}'.format(epoch, batch_time.avg, losses.avg, a,
                                 failure_008_rate, failure_010_rate)
     logger.info(msg)
 
+    # if writer_dict:
+    #     writer = writer_dict['writer']
+    #     global_steps = writer_dict['valid_global_steps']
+    #     writer.add_scalar('valid_loss', losses.avg, global_steps)
+    #     writer.add_scalar('valid_nme', nme, global_steps)
+    #     writer_dict['valid_global_steps'] = global_steps + 1
     if writer_dict:
         writer = writer_dict['writer']
         global_steps = writer_dict['valid_global_steps']
         writer.add_scalar('valid_loss', losses.avg, global_steps)
-        writer.add_scalar('valid_nme', nme, global_steps)
+        writer.add_scalar('valid_a', a, global_steps)
         writer_dict['valid_global_steps'] = global_steps + 1
 
-    return nme, predictions
+    # return nme, predictions
+    return a, nme, predictions
 
 
 def inference(config, data_loader, model):

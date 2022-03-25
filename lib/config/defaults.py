@@ -16,9 +16,9 @@ _C = CN()
 
 _C.OUTPUT_DIR = 'output'
 _C.LOG_DIR = 'log'
-_C.GPUS = (0, 1, 2, 4)
-_C.WORKERS = 16
-_C.PRINT_FREQ = 20
+_C.GPUS = (0, )
+_C.WORKERS = 0
+_C.PRINT_FREQ = 50
 _C.AUTO_RESUME = False
 _C.PIN_MEMORY = True
 
@@ -73,7 +73,7 @@ _C.MODEL.EXTRA.STAGE4.FUSE_METHOD = 'SUM'
 # DATASET related params
 _C.DATASET = CN()
 _C.DATASET.ROOT = ''
-_C.DATASET.DATASET = 'AFLW'
+_C.DATASET.DATASET = 'Xray'
 _C.DATASET.TRAINSET = ''
 _C.DATASET.TESTSET = ''
 
