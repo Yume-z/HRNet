@@ -75,7 +75,7 @@ def main():
         pin_memory=config.PIN_MEMORY
     )
 
-    nme, predictions = function.inference(config, test_loader, model)
+    a, predictions = function.inference(config, test_loader, model)
 
     torch.save(predictions, os.path.join(final_output_dir, 'predictions.pth'))
 

@@ -27,11 +27,45 @@ class xRAY(data.Dataset):
         # specify annotation file for dataset
         if is_train:
             self.csv_file = cfg.DATASET.TRAINSET
+            self.transform = A.Compose(
+            [A.Resize(width=512, height=1024)
+             # A.RandomCrop(width=512, height=1024), #point number changed
+             # # whether predict as the point sequence? And output size need to change?Or just change input size
+             #
+             #
+             # A.HorizontalFlip(p=0.5),
+             # A.VerticalFlip(p=0.5),
+             # A.OneOf([
+             #     A.GaussNoise(),  # 将高斯噪声应用于输入图像。
+             # ], p=0.2),  # 应用选定变换的概率
+             # A.OneOf([
+             #     A.MotionBlur(p=0.2),  # 使用随机大小的内核将运动模糊应用于输入图像。
+             #     A.MedianBlur(blur_limit=3, p=0.1),  # 中值滤波
+             #     A.Blur(blur_limit=3, p=0.1),  # 使用随机大小的内核模糊输入图像。
+             # ], p=0.2),
+             # # A.ShiftScaleRotate(shift_limit=0.0625, scale_limit=0.01, rotate_limit=5, p=1),
+             # # 随机应用仿射变换：平移，缩放和旋转输入 will change num
+             #
+             # A.RandomBrightnessContrast(p=0.2),  # 随机明亮对比度
+
+             ],
+            keypoint_params=A.KeypointParams(format='xy')
+        )
+
+
         else:
             self.csv_file = cfg.DATASET.TESTSET
+            self.transform =A.Compose(
+            [A.Resize(width=512, height=1024)
+             ],
+            keypoint_params=A.KeypointParams(format='xy')
+        )
+
+
+
 
         self.is_train = is_train
-        self.transform = transform
+        # self.transform = transform
         self.data_root = cfg.DATASET.ROOT
         self.input_size = cfg.MODEL.IMAGE_SIZE
         self.output_size = cfg.MODEL.HEATMAP_SIZE
@@ -75,31 +109,7 @@ class xRAY(data.Dataset):
         # print('image', imggg.shape)
 
         # data agumentation
-        transform = A.Compose(
-            [A.Resize(width=512, height=1024),
-             A.RandomCrop(width=512, height=1024), #point number changed
-             # whether predict as the point sequence? And output size need to change?Or just change input size
-
-
-             A.HorizontalFlip(p=0.5),
-             A.VerticalFlip(p=0.5),
-             A.OneOf([
-                 A.GaussNoise(),  # 将高斯噪声应用于输入图像。
-             ], p=0.2),  # 应用选定变换的概率
-             A.OneOf([
-                 A.MotionBlur(p=0.2),  # 使用随机大小的内核将运动模糊应用于输入图像。
-                 A.MedianBlur(blur_limit=3, p=0.1),  # 中值滤波
-                 A.Blur(blur_limit=3, p=0.1),  # 使用随机大小的内核模糊输入图像。
-             ], p=0.2),
-             # A.ShiftScaleRotate(shift_limit=0.0625, scale_limit=0.01, rotate_limit=5, p=1),
-             # 随机应用仿射变换：平移，缩放和旋转输入 will change num
-
-             A.RandomBrightnessContrast(p=0.2),  # 随机明亮对比度
-
-
-             ],
-            keypoint_params=A.KeypointParams(format='xy')
-        )
+        transform = self.transform
         transformed = transform(image=img, keypoints=pts)
         img = transformed['image']
         pts = transformed['keypoints']  # need transform back

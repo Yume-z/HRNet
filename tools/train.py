@@ -127,7 +127,7 @@ def main():
         # is_best = nme < best_nme
         # best_nme = min(nme, best_nme)
         is_best = a > best_a
-        best_a = min(a, best_a)
+        best_a = max(a, best_a)
 
         logger.info('=> saving checkpoint to {}'.format(final_output_dir))
         print("best:", is_best)

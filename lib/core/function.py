@@ -210,6 +210,7 @@ def inference(config, data_loader, model):
 
     nme_count = 0
     nme_batch_sum = 0
+    a_batch_sum = 0
     count_failure_008 = 0
     count_failure_010 = 0
     end = time.time()
@@ -221,24 +222,25 @@ def inference(config, data_loader, model):
             score_map = output.data.cpu()
             preds = decode_preds(score_map, [128, 256])
 
-            # # visualize if don't need visulize, comment
-            # for j, b in enumerate(preds.tolist()):
-            #     p = []
-            #     for item in b:
-            #         p.append((int(item[0]), int(item[1])))
-            #     n = meta['name'][j]
-            #     tp[n] = p
-            #     j += 1
+            # visualize if don't need visulize, comment
+            for j, b in enumerate(preds.tolist()):
+                p = []
+                for item in b:
+                    p.append((int(item[0]), int(item[1])))
+                n = meta['name'][j]
+                tp[n] = p
+                j += 1
 
 
             # NME
-            nme_temp = compute_nme(preds, meta)
+            a_temp, nme_temp = compute_nme(preds, meta)
 
             failure_008 = (nme_temp > 0.08).sum()
             failure_010 = (nme_temp > 0.10).sum()
             count_failure_008 += failure_008
             count_failure_010 += failure_010
 
+            a_batch_sum += np.sum(a_temp)
             nme_batch_sum += np.sum(nme_temp)
             nme_count = nme_count + preds.size(0)
             for n in range(score_map.size(0)):
@@ -248,18 +250,26 @@ def inference(config, data_loader, model):
             batch_time.update(time.time() - end)
             end = time.time()
 
-    # # visualize if don't need visulize, comment
-    # for file in tp:
-    #     path1 = '/public/home/zhaojh1/git_main/HRNet/visual_data/'
-    #     path2 = '/public/home/zhaojh1/git_main/HRNet/visual/'
-    #     image = cv2.imread(os.path.join(path1, file))
-    #     point_size = 1
-    #     point_color = (0, 0, 255)  # BGR
-    #     thickness = 4  # 可以为 0 、4、8
-    #     lp = tp[file]
-    #     for point in lp:
-    #         cv2.circle(image, point, point_size, point_color, thickness)
-    #         cv2.imwrite(f"{os.path.join(path2, file[0:5])}.png", image, [int(cv2.IMWRITE_PNG_COMPRESSION), 9])
+    # visualize if don't need visulize, comment
+    #Need gt transformed back
+    for file in tp:
+        path1 = '/public/home/zhaojh1/git_main/HRNet/visual_data/'
+        path2 = '/public/home/zhaojh1/git_main/HRNet/visual/'
+        image = cv2.imread(os.path.join(path1, file))
+
+        point_size = 1
+        point_color = (0, 0, 255)  # BGR
+        thickness = 4  # 可以为 0 、4、8
+        lp = tp[file]
+
+        #If there is crop, need to change and use origin data
+        size = image.shape
+        xt = size[1]/512
+        yt = size[0]/1024
+        for point in lp:
+            p = (int(point[0] * xt), int(point[1] * yt))
+            cv2.circle(image, p, point_size, point_color, thickness)
+            cv2.imwrite(f"{os.path.join(path2, file[0:5])}.png", image, [int(cv2.IMWRITE_PNG_COMPRESSION), 9])
 
 
     # for root, dirs, files in os.walk('/public/home/zhaojh1/git_main/HRNet/visual_data/', True):
@@ -274,13 +284,14 @@ def inference(config, data_loader, model):
     #             cv2.imwrite(f"/public/home/zhaojh1/git_main/HRNet/visual/{file}.png", image, [int(cv2.IMWRITE_PNG_COMPRESSION), 9])
     #         j += 1
 
+    a = a_batch_sum / nme_count
     nme = nme_batch_sum / nme_count
     failure_008_rate = count_failure_008 / nme_count
     failure_010_rate = count_failure_010 / nme_count
 
-    msg = 'Test Results time:{:.4f} loss:{:.4f} nme:{:.4f} [008]:{:.4f} ' \
-          '[010]:{:.4f}'.format(batch_time.avg, losses.avg, nme,
+    msg = 'Test Results time:{:.4f} loss:{:.4f} a:{:.4f} [008]:{:.4f} ' \
+          '[010]:{:.4f}'.format(batch_time.avg, losses.avg, a,
                                 failure_008_rate, failure_010_rate)
     logger.info(msg)
 
-    return nme, predictions
+    return a, predictions
