@@ -62,9 +62,9 @@ def compute_nme(preds, meta):
                 j += 1
         a[i] = j/L
 
-        print(f"m:{m},a:{a[i]}.")
-        if a[i] <= 0.6:
-            print(meta['name'])
+        # print(f"m:{m},a:{a[i]}.")
+        # if a[i] <= 0.6:
+        #     print(meta['name'])
 
         # rmse[i] = np.sum(np.linalg.norm(pts_pred - pts_gt, axis=1)) / L
         rmse[i] = np.sum(np.power(np.linalg.norm(pts_pred - pts_gt, axis=1), 2)) / L / 10 # mse
@@ -78,7 +78,7 @@ def compute_nme(preds, meta):
     # return SMAPE
 
 
-def decode_preds(output, center, scale, res):
+def decode_preds(output, res):
     coords = get_preds(output)  # float type
     # print("coords", coords)
     coords = coords.cpu()
@@ -96,7 +96,7 @@ def decode_preds(output, center, scale, res):
 
     # Transform back
     for i in range(coords.size(0)):
-        preds[i] = transform_preds(coords[i], center[i], scale[i], res)
+        preds[i] = transform_preds(coords[i], res)
 
     if preds.dim() < 3:
         preds = preds.view(1, preds.size())

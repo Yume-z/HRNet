@@ -72,7 +72,7 @@ def train(config, train_loader, model, critertion, optimizer,
         # NME
         score_map = output.data.cpu()
         # print("score_map", score_map)
-        preds = decode_preds(score_map, meta['center'], meta['scale'], [128, 256])
+        preds = decode_preds(score_map, [128, 256])
         # print("preds",preds)
         # if epoch > 90:
         #     print(f"train_pred:{preds}.")
@@ -143,7 +143,7 @@ def validate(config, val_loader, model, criterion, epoch, writer_dict):
             # loss
             loss = criterion(output, target)
 
-            preds = decode_preds(score_map, meta['center'], meta['scale'], [128, 256])
+            preds = decode_preds(score_map, [128, 256])
             # if epoch > 30:
             # compute_nme(preds, meta)
             #     print(f"val_pred:{preds}.")
@@ -219,7 +219,7 @@ def inference(config, data_loader, model):
             data_time.update(time.time() - end)
             output = model(inp)
             score_map = output.data.cpu()
-            preds = decode_preds(score_map, meta['center'], meta['scale'], [128, 256])
+            preds = decode_preds(score_map, [128, 256])
 
             # # visualize if don't need visulize, comment
             # for j, b in enumerate(preds.tolist()):
