@@ -45,7 +45,7 @@ class AverageMeter(object):
         self.avg = self.sum / self.count
 
 
-def train(config, train_loader, model, critertion, optimizer,
+def train(config, train_loader, model, criterion, optimizer,
           epoch, writer_dict):
     batch_time = AverageMeter()
     data_time = AverageMeter()
@@ -67,7 +67,8 @@ def train(config, train_loader, model, critertion, optimizer,
         output = model(inp)
         target = target.cuda(non_blocking=True)
         # print("out", output.size(), target.size())
-        loss = critertion(output, target)
+        # loss = critertion(output, target)
+        loss = criterion(output, target)
         # print("loss", loss)
         # NME
         score_map = output.data.cpu()
@@ -254,7 +255,7 @@ def inference(config, data_loader, model):
     #Need gt transformed back
     for file in tp:
         path1 = '/public/home/zhaojh1/git_main/HRNet/visual_data/'
-        path2 = '/public/home/zhaojh1/git_main/HRNet/visual/'
+        path2 = './visual/'
         image = cv2.imread(os.path.join(path1, file))
 
         point_size = 1
@@ -269,7 +270,7 @@ def inference(config, data_loader, model):
         for point in lp:
             p = (int(point[0] * xt), int(point[1] * yt))
             cv2.circle(image, p, point_size, point_color, thickness)
-            cv2.imwrite(f"{os.path.join(path2, file[0:5])}.png", image, [int(cv2.IMWRITE_PNG_COMPRESSION), 9])
+        cv2.imwrite(f"{os.path.join(path2, file[0:5])}.png", image, [int(cv2.IMWRITE_PNG_COMPRESSION), 9])
 
 
     # for root, dirs, files in os.walk('/public/home/zhaojh1/git_main/HRNet/visual_data/', True):
