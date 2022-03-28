@@ -103,17 +103,18 @@ def main():
 
     for fold, (t, v) in enumerate(kf.split(dataset)):
 
-        # i = epoch % fold_n
-        # print(i,train_list[i],val_list[i])
 
-        train_set = torch.utils.data.dataset.Subset(dataset_type(config, is_train=True, if_trans=True), t)
+
+        # train_set = torch.utils.data.dataset.Subset(dataset_type(config, is_train=True, if_trans=True), t)
+        train_set = torch.utils.data.dataset.Subset(dataset, t)
         val_set = torch.utils.data.dataset.Subset(dataset, v)
         train_loader = DataLoader(
             dataset=train_set,
             batch_size=config.TRAIN.BATCH_SIZE_PER_GPU * len(gpus),
             shuffle=config.TRAIN.SHUFFLE,
             num_workers=config.WORKERS,
-            pin_memory=config.PIN_MEMORY)
+            pin_memory=config.PIN_MEMORY
+        )
 
         val_loader = DataLoader(
             dataset=val_set,
@@ -162,7 +163,7 @@ def main():
             # logger.info('=> saving checkpoint to {}'.format(final_output_dir))
             print("best:", is_best)
             if epoch == config.TRAIN.END_EPOCH - 1:
-                accuracy[fold] = best_a
+                accuracy.append(best_a)
                 print(fold, a, best_a)
             # utils.save_checkpoint(
             #     {"state_dict": model,

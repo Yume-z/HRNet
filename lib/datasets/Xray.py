@@ -43,10 +43,6 @@ class xRAY(data.Dataset):
                  # A.OneOf([
                  #     A.GaussNoise(),  # 将高斯噪声应用于输入图像。
                  # ], p=0.2),  # 应用选定变换的概率
-                 # A.OneOf([
-                 #     A.MotionBlur(p=0.2),  # 使用随机大小的内核将运动模糊应用于输入图像。
-                 #     A.MedianBlur(blur_limit=3, p=0.1),  # 中值滤波
-                 #     A.Blur(blur_limit=3, p=0.1),  # 使用随机大小的内核模糊输入图像。
                  # ], p=0.2),
                  # # A.ShiftScaleRotate(shift_limit=0.0625, scale_limit=0.01, rotate_limit=5, p=1),
                  # # 随机应用仿射变换：平移，缩放和旋转输入 will change num
