@@ -103,8 +103,20 @@ def main():
 
     for fold, (t, v) in enumerate(kf.split(dataset)):
 
-        # i = epoch % fold_n
-        # print(i,train_list[i],val_list[i])
+        model = models.get_face_alignment_net(config)
+        writer_dict = {
+            'writer': SummaryWriter(log_dir=tb_log_dir),
+            'train_global_steps': 0,
+            'valid_global_steps': 0,
+        }
+
+        gpus = list(config.GPUS)
+        model = nn.DataParallel(model, device_ids=gpus).cuda()
+
+        # loss
+        criterion = torch.nn.MSELoss(reduction='mean').cuda()
+
+        optimizer = utils.get_optimizer(config, model)
 
         train_set = torch.utils.data.dataset.Subset(dataset_type(config, is_train=True, if_trans=True), t)
         val_set = torch.utils.data.dataset.Subset(dataset, v)
@@ -162,7 +174,7 @@ def main():
             # logger.info('=> saving checkpoint to {}'.format(final_output_dir))
             print("best:", is_best)
             if epoch == config.TRAIN.END_EPOCH - 1:
-                accuracy[fold] = best_a
+                accuracy.append(best_a)
                 print(fold, a, best_a)
             # utils.save_checkpoint(
             #     {"state_dict": model,
@@ -178,12 +190,13 @@ def main():
         logger.info(f'saving {fold}th model state to {final_model_state_file}')
 
         torch.save(model.module.state_dict(), final_model_state_file)
+        writer_dict['writer'].close()
 
         # debug and test
         # break
 
     print(accuracy)
-    writer_dict['writer'].close()
+    
 
 
 if __name__ == '__main__':

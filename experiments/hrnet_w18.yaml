@@ -1,5 +1,5 @@
-GPUS: (0, 1)
-WORKERS: 2
+GPUS: (0, 1, 2, 3)
+WORKERS: 8
 PRINT_FREQ: 50
 
 DATASET:
@@ -14,7 +14,7 @@ MODEL:
   NAME: 'hrnet'
   NUM_JOINTS: 96
   INIT_WEIGHTS: true
-  PRETRAINED: 'hrnetv2_pretrained/hrnetv2_w18_imagenet_pretrained.pth'
+  PRETRAINED: '/public/home/zhaojh1/git_main/HRNet/hrnetv2_pretrained/hrnetv2_w18_imagenet_pretrained.pth'
   SIGMA: 1.0
   IMAGE_SIZE:
     - 1024
@@ -64,7 +64,7 @@ MODEL:
         - 144
       FUSE_METHOD: SUM
 TRAIN:
-  BATCH_SIZE_PER_GPU: 4
+  BATCH_SIZE_PER_GPU: 2
   SHUFFLE: true
   BEGIN_EPOCH: 0
   END_EPOCH: 60
@@ -76,4 +76,4 @@ TRAIN:
   MOMENTUM: 0.0
   NESTEROV: false
 TEST:
-  BATCH_SIZE_PER_GPU: 4
+  BATCH_SIZE_PER_GPU: 2

@@ -160,8 +160,8 @@ def validate(config, val_loader, model, criterion, epoch, writer_dict):
             a_batch_sum += np.sum(a_temp)
             nme_batch_sum += np.sum(nme_temp)
             nme_count = nme_count + preds.size(0)
-            for n in range(score_map.size(0)):
-                predictions[meta['index'][n], :, :] = preds[n, :, :]
+            #for n in range(score_map.size(0)):
+            #    predictions[meta['index'][n], :, :] = preds[n, :, :]
 
             losses.update(loss.item(), inp.size(0))
 
