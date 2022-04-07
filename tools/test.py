@@ -51,9 +51,12 @@ def main():
     config.defrost()
     config.MODEL.INIT_WEIGHTS = False
     config.freeze()
+    gpus = list(config.GPUS)
+    
+    
     model = models.get_face_alignment_net(config)
 
-    gpus = list(config.GPUS)
+    
     model = nn.DataParallel(model, device_ids=gpus).cuda()
 
     # load model
@@ -75,7 +78,7 @@ def main():
         pin_memory=config.PIN_MEMORY
     )
 
-    a, predictions = function.inference(config, test_loader, model)
+    a, nme, predictions = function.inference(config, test_loader, model)
 
     torch.save(predictions, os.path.join(final_output_dir, 'predictions.pth'))
 

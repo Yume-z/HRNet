@@ -111,8 +111,8 @@ def train(config, train_loader, model, criterion, optimizer,
         end = time.time()
     nme = nme_batch_sum / nme_count
     a = a_batch_sum / nme_count
-    msg = 'Train Epoch {} time:{:.4f} loss:{:.4f} a:{:.4f}' \
-        .format(epoch, batch_time.avg, losses.avg, a)
+    msg = 'Train Epoch {} time:{:.4f} loss:{:.4f} a:{:.4f} mse:{:.4f}' \
+        .format(epoch, batch_time.avg, losses.avg, a, nme)
     logger.info(msg)
 
 
@@ -177,8 +177,8 @@ def validate(config, val_loader, model, criterion, epoch, writer_dict):
     # msg = 'Test Epoch {} time:{:.4f} loss:{:.4f} nme:{:.4f} [008]:{:.4f} ' \
     #       '[010]:{:.4f}'.format(epoch, batch_time.avg, losses.avg, nme,
     #                             failure_008_rate, failure_010_rate)
-    msg = 'Test Epoch {} time:{:.4f} loss:{:.4f} a:{:.4f} [008]:{:.4f} ' \
-          '[010]:{:.4f}'.format(epoch, batch_time.avg, losses.avg, a,
+    msg = 'Test Epoch {} time:{:.4f} loss:{:.4f} a:{:.4f} mse:{:.4f} [008]:{:.4f} ' \
+          '[010]:{:.4f}'.format(epoch, batch_time.avg, losses.avg, a, nme,
                                 failure_008_rate, failure_010_rate)
     logger.info(msg)
 
@@ -193,6 +193,7 @@ def validate(config, val_loader, model, criterion, epoch, writer_dict):
         global_steps = writer_dict['valid_global_steps']
         writer.add_scalar('valid_loss', losses.avg, global_steps)
         writer.add_scalar('valid_a', a, global_steps)
+        writer.add_scalar('valid_mse', nme, global_steps)
         writer_dict['valid_global_steps'] = global_steps + 1
 
     # return nme, predictions
@@ -254,13 +255,14 @@ def inference(config, data_loader, model):
     # visualize if don't need visulize, comment
     #Need gt transformed back
     for file in tp:
+        break
         path1 = '/public/home/zhaojh1/git_main/HRNet/visual_data/'
         path2 = './visual/'
         image = cv2.imread(os.path.join(path1, file))
 
-        point_size = 1
+        point_size = 4
         point_color = (0, 0, 255)  # BGR
-        thickness = 4  # 可以为 0 、4、8
+        thickness = 8  # 可以为 0 、4、8
         lp = tp[file]
 
         #If there is crop, need to change and use origin data
@@ -271,6 +273,7 @@ def inference(config, data_loader, model):
             p = (int(point[0] * xt), int(point[1] * yt))
             cv2.circle(image, p, point_size, point_color, thickness)
         cv2.imwrite(f"{os.path.join(path2, file[0:5])}.png", image, [int(cv2.IMWRITE_PNG_COMPRESSION), 9])
+
 
 
     # for root, dirs, files in os.walk('/public/home/zhaojh1/git_main/HRNet/visual_data/', True):
@@ -290,9 +293,9 @@ def inference(config, data_loader, model):
     failure_008_rate = count_failure_008 / nme_count
     failure_010_rate = count_failure_010 / nme_count
 
-    msg = 'Test Results time:{:.4f} loss:{:.4f} a:{:.4f} [008]:{:.4f} ' \
-          '[010]:{:.4f}'.format(batch_time.avg, losses.avg, a,
+    msg = 'Test Results time:{:.4f} loss:{:.4f} a:{:.4f} mse:{:.4f} [008]:{:.4f} ' \
+          '[010]:{:.4f}'.format(batch_time.avg, losses.avg, a, nme,
                                 failure_008_rate, failure_010_rate)
     logger.info(msg)
 
-    return a, predictions
+    return a, nme, predictions

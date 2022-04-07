@@ -100,6 +100,7 @@ def main():
     dataset = dataset_type(config, is_train=True)
     kf = KFold(n_splits=15)
     accuracy = []
+    MSE = []
 
     for fold, (t, v) in enumerate(kf.split(dataset)):
 
@@ -175,7 +176,8 @@ def main():
             print("best:", is_best)
             if epoch == config.TRAIN.END_EPOCH - 1:
                 accuracy.append(best_a)
-                print(fold, a, best_a)
+                MSE.append(nme)
+                print(fold, a, best_a, nme)
             # utils.save_checkpoint(
             #     {"state_dict": model,
             #      "epoch": epoch + 1,
@@ -196,7 +198,7 @@ def main():
         # break
 
     print(accuracy)
-    
+    print(MSE)
 
 
 if __name__ == '__main__':
