@@ -53,7 +53,7 @@ class xRAY(data.Dataset):
                  #
                  # A.RandomBrightnessContrast(p=0.2),  # 随机明亮对比度
                  ],
-                keypoint_params=A.KeypointParams(format='xy')
+                keypoint_params=A.KeypointParams(format='xy',remove_invisible=False)
             )
         else:
             self.transform = A.Compose(
