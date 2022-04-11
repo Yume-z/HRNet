@@ -51,11 +51,11 @@ def main():
     model = models.get_face_alignment_net(config)
 
     # copy model files
-    writer_dict = {
-        'writer': SummaryWriter(log_dir=tb_log_dir),
-        'train_global_steps': 0,
-        'valid_global_steps': 0,
-    }
+    #writer_dict = {
+    #    'writer': SummaryWriter(log_dir=tb_log_dir),
+    #    'train_global_steps': 0,
+    #    'valid_global_steps': 0,
+    #}
 
     gpus = list(config.GPUS)
     model = nn.DataParallel(model, device_ids=gpus).cuda()
@@ -195,7 +195,7 @@ def main():
         writer_dict['writer'].close()
 
         # debug and test
-        # break
+        break
 
     print(accuracy)
     print(MSE)

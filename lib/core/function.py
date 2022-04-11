@@ -63,25 +63,22 @@ def train(config, train_loader, model, criterion, optimizer,
         data_time.update(time.time() - end)
 
         # compute the output
-        # print("input", inp)
+
         output = model(inp)
         target = target.cuda(non_blocking=True)
-        # print("out", output.size(), target.size())
-        # loss = critertion(output, target)
-        loss = criterion(output, target)
-        # print("loss", loss)
-        # NME
-        score_map = output.data.cpu()
-        # print("score_map", score_map)
-        preds = decode_preds(score_map, [128, 256])
-        # print("preds",preds)
-        # if epoch > 90:
-        #     print(f"train_pred:{preds}.")
 
-        a_temp, nme_batch = compute_nme(preds, meta)
-        nme_batch_sum = nme_batch_sum + np.sum(nme_batch)
-        a_batch_sum += np.sum(a_temp)
-        nme_count = nme_count + preds.size(0)
+        loss = criterion(output, target)
+
+        # NME
+        #score_map = output.data.cpu()
+
+        #preds = decode_preds(score_map, [128, 256])
+
+
+        #a_temp, nme_batch = compute_nme(preds, meta)
+        #nme_batch_sum = nme_batch_sum + np.sum(nme_batch)
+        #a_batch_sum += np.sum(a_temp)
+        #nme_count = nme_count + preds.size(0)
 
         # optimize
         optimizer.zero_grad()
@@ -109,10 +106,10 @@ def train(config, train_loader, model, criterion, optimizer,
                 writer_dict['train_global_steps'] = global_steps + 1
 
         end = time.time()
-    nme = nme_batch_sum / nme_count
-    a = a_batch_sum / nme_count
-    msg = 'Train Epoch {} time:{:.4f} loss:{:.4f} a:{:.4f} mse:{:.4f}' \
-        .format(epoch, batch_time.avg, losses.avg, a, nme)
+    #nme = nme_batch_sum / nme_count
+    #a = a_batch_sum / nme_count
+    msg = 'Train Epoch {} time:{:.4f} loss:{:.8f}' \
+        .format(epoch, batch_time.avg, losses.avg)
     logger.info(msg)
 
 
@@ -177,7 +174,7 @@ def validate(config, val_loader, model, criterion, epoch, writer_dict):
     # msg = 'Test Epoch {} time:{:.4f} loss:{:.4f} nme:{:.4f} [008]:{:.4f} ' \
     #       '[010]:{:.4f}'.format(epoch, batch_time.avg, losses.avg, nme,
     #                             failure_008_rate, failure_010_rate)
-    msg = 'Test Epoch {} time:{:.4f} loss:{:.4f} a:{:.4f} mse:{:.4f} [008]:{:.4f} ' \
+    msg = 'Test Epoch {} time:{:.4f} loss:{:.8f} a:{:.4f} mse:{:.4f} [008]:{:.4f} ' \
           '[010]:{:.4f}'.format(epoch, batch_time.avg, losses.avg, a, nme,
                                 failure_008_rate, failure_010_rate)
     logger.info(msg)
@@ -245,8 +242,8 @@ def inference(config, data_loader, model):
             a_batch_sum += np.sum(a_temp)
             nme_batch_sum += np.sum(nme_temp)
             nme_count = nme_count + preds.size(0)
-            for n in range(score_map.size(0)):
-                predictions[meta['index'][n], :, :] = preds[n, :, :]
+            # for n in range(score_map.size(0)):
+            #     predictions[meta['index'][n], :, :] = preds[n, :, :]
 
             # measure elapsed time
             batch_time.update(time.time() - end)
@@ -293,7 +290,7 @@ def inference(config, data_loader, model):
     failure_008_rate = count_failure_008 / nme_count
     failure_010_rate = count_failure_010 / nme_count
 
-    msg = 'Test Results time:{:.4f} loss:{:.4f} a:{:.4f} mse:{:.4f} [008]:{:.4f} ' \
+    msg = 'Test Results time:{:.4f} loss:{:.8f} a:{:.4f} mse:{:.4f} [008]:{:.4f} ' \
           '[010]:{:.4f}'.format(batch_time.avg, losses.avg, a, nme,
                                 failure_008_rate, failure_010_rate)
     logger.info(msg)

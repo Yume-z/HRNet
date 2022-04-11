@@ -1,5 +1,5 @@
-GPUS: (0, )
-WORKERS: 2
+GPUS: (0, 1)
+WORKERS: 4
 PRINT_FREQ: 50
 
 DATASET:
@@ -12,7 +12,7 @@ DATASET:
   ROT_FACTOR: 0
 MODEL:
   NAME: 'hrnet'
-  NUM_JOINTS: 96
+  NUM_JOINTS: 6
   INIT_WEIGHTS: true
   PRETRAINED: '/public/home/zhaojh1/git_main/HRNet/hrnetv2_pretrained/hrnetv2_w18_imagenet_pretrained.pth'
   SIGMA: 1.0

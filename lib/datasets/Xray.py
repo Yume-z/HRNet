@@ -68,6 +68,7 @@ class xRAY(data.Dataset):
         self.input_size = cfg.MODEL.IMAGE_SIZE
         self.output_size = cfg.MODEL.HEATMAP_SIZE
         self.sigma = cfg.MODEL.SIGMA
+        self.numb = cfg.MODEL.NUM_JOINTS  #new
         self.scale_factor = cfg.DATASET.SCALE_FACTOR
         self.rot_factor = cfg.DATASET.ROT_FACTOR
         self.label_type = cfg.MODEL.TARGET_TYPE
@@ -128,19 +129,22 @@ class xRAY(data.Dataset):
 
         # img = crop(img, center, scale, self.input_size, rot=r)
 
-        target = np.zeros((nparts, self.output_size[0], self.output_size[1]))
+        target = np.zeros((self.numb, self.output_size[0], self.output_size[1]))
         tpts = pts.copy()
         # print(tpts)
         # l = len(tpts)
         # print(l)
         for i in range(nparts):
             # print(tpts[i, 1])
-            if tpts[i, 1] > 0:
+            if tpts[i, 0] > 0 and tpts[i, 1] > 0:
                 # print(tpts[i, 0:2])
+                j = i % self.numb
                 tpts[i, 0:2] = transform_pixel(tpts[i, 0:2] + 1, self.output_size, rot=r)
                 # print('tpt')
-                target[i] = generate_target(target[i], tpts[i] - 1, self.sigma,    #index x out of bounds for axis 0 with size 56
+                target[j] = generate_target(target[j], tpts[i] - 1, self.sigma,    #index x out of bounds for axis 0 with size 56
                                             label_type=self.label_type)
+            else:
+                tpts[i, 0:2] = (0, 0)
                 # print('target')
         # print("tpts", tpts)
         # print("target", target)
