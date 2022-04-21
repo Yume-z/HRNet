@@ -189,7 +189,7 @@ def main():
                 accuracy.append(best_a)
                 MSE.append(best_m)
                 epoch_num.append(best_epoch)
-                print(fold, best_epoch, a, best_a, nme, best_nme)
+                print(fold, best_epoch, a, best_a, nme, best_m)
             # utils.save_checkpoint(
             #     {"state_dict": model,
             #      "epoch": epoch + 1,
