@@ -33,12 +33,23 @@ class xRAY(data.Dataset):
 
         if if_trans:
             self.transform = A.Compose(
-                [A.Resize(width=512, height=1024)
-                 # A.RandomCrop(width=512, height=1024), #point number changed
+                [
+                 A.OneOf([
+                      A.Compose([
+                          A.Resize(width=512, height=1024),
+                          A.RandomCrop (width=512, height=512),
+                          A.PadIfNeeded(min_height=1024, min_width=512, border_mode=0)]),
+                      A.Compose([
+                          A.Resize(width=512, height=1024),
+                          A.RandomCrop (width=512, height=768),
+                          A.PadIfNeeded(min_height=1024, min_width=512, border_mode=0)]),
+                      A.Resize(width=512, height=1024),
+                  ], p=1),
+                 # A.RandomCrop(width=512, height=1024)
                  # # whether predict as the point sequence? And output size need to change?Or just change input size
                  #
                  #
-                 # A.HorizontalFlip(p=0.5),
+                 A.HorizontalFlip(p=0.5),
                  # A.VerticalFlip(p=0.5),
                  # A.OneOf([
                  #     A.GaussNoise(),  # 将高斯噪声应用于输入图像。
@@ -51,7 +62,7 @@ class xRAY(data.Dataset):
                  # # A.ShiftScaleRotate(shift_limit=0.0625, scale_limit=0.01, rotate_limit=5, p=1),
                  # # 随机应用仿射变换：平移，缩放和旋转输入 will change num
                  #
-                 # A.RandomBrightnessContrast(p=0.2),  # 随机明亮对比度
+                 A.RandomBrightnessContrast(p=0.5),  # 随机明亮对比度
                  ],
                 keypoint_params=A.KeypointParams(format='xy',remove_invisible=False)
             )

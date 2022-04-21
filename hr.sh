@@ -2,8 +2,8 @@
 #SBATCH --job-name=hr
 #SBATCH --partition=normal
 #SBATCH -N 1
-#SBATCH --cpus-per-task=4
-#SBATCH --gres=gpu:2
+#SBATCH --cpus-per-task=24
+#SBATCH --gres=gpu:4
 #SBATCH --mail-type=none
 #SBATCH --mail-user=zhaojh1@shanghaitech.edu.cn
 #SBATCH --output=hr.out
