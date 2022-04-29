@@ -48,7 +48,7 @@ def main():
     cudnn.determinstic = config.CUDNN.DETERMINISTIC
     cudnn.enabled = config.CUDNN.ENABLED
 
-    model = models.get_face_alignment_net(config)
+    #model = models.get_face_alignment_net(config)
 
     # copy model files
     #writer_dict = {
@@ -57,13 +57,16 @@ def main():
     #    'valid_global_steps': 0,
     #}
 
-    gpus = list(config.GPUS)
-    model = nn.DataParallel(model, device_ids=gpus).cuda()
+    #gpus = list(config.GPUS)
+    #model = nn.DataParallel(model, device_ids=gpus).cuda()
 
     # loss
-    criterion = torch.nn.MSELoss(reduction='mean').cuda()
+    #criterion = torch.nn.MSELoss(reduction='mean').cuda()
 
-    optimizer = utils.get_optimizer(config, model)
+    #optimizer = utils.get_optimizer(config, model)
+    
+    
+    
     # best_nme = 100
     # best_a = 0
     # last_epoch = config.TRAIN.BEGIN_EPOCH
@@ -98,26 +101,32 @@ def main():
 
     # KFOLD
     dataset = dataset_type(config, is_train=True)
-    kf = KFold(n_splits=15)
+    kf = KFold(n_splits=5)
     accuracy = []
     MSE = []
+    epoch_num = []
 
     for fold, (t, v) in enumerate(kf.split(dataset)):
 
+
         model = models.get_face_alignment_net(config)
+
+        gpus = list(config.GPUS)
+
+        model = nn.DataParallel(model, device_ids=gpus).cuda()
+        
+        criterion = torch.nn.MSELoss(reduction='mean').cuda()
+        
+        optimizer = utils.get_optimizer(config, model)
+
+
         writer_dict = {
             'writer': SummaryWriter(log_dir=tb_log_dir),
             'train_global_steps': 0,
             'valid_global_steps': 0,
         }
 
-        gpus = list(config.GPUS)
-        model = nn.DataParallel(model, device_ids=gpus).cuda()
 
-        # loss
-        criterion = torch.nn.MSELoss(reduction='mean').cuda()
-
-        optimizer = utils.get_optimizer(config, model)
 
         train_set = torch.utils.data.dataset.Subset(dataset_type(config, is_train=True, if_trans=True), t)
         val_set = torch.utils.data.dataset.Subset(dataset, v)
@@ -137,6 +146,8 @@ def main():
         )
 
         best_a = 0
+        best_m = 0
+        best_epoch = 0
         last_epoch = config.TRAIN.BEGIN_EPOCH
         if isinstance(config.TRAIN.LR_STEP, list):
             lr_scheduler = torch.optim.lr_scheduler.MultiStepLR(
@@ -171,13 +182,22 @@ def main():
             # best_nme = min(nme, best_nme)
             is_best = a > best_a
             best_a = max(a, best_a)
+            
+            
+            if is_best == True:
+                best_epoch = epoch
+                best_m = nme
+                best_model_state_file = os.path.join(final_output_dir,
+                                                      f'{fold}best_state.pth')
+                torch.save(model.module.state_dict(), best_model_state_file)
 
             # logger.info('=> saving checkpoint to {}'.format(final_output_dir))
             print("best:", is_best)
             if epoch == config.TRAIN.END_EPOCH - 1:
                 accuracy.append(best_a)
-                MSE.append(nme)
-                print(fold, a, best_a, nme)
+                MSE.append(best_m)
+                epoch_num.append(best_epoch)
+                print(fold, best_epoch, a, best_a, nme, best_m)
             # utils.save_checkpoint(
             #     {"state_dict": model,
             #      "epoch": epoch + 1,
@@ -195,10 +215,11 @@ def main():
         writer_dict['writer'].close()
 
         # debug and test
-        break
+        
 
     print(accuracy)
     print(MSE)
+    print(epoch_num)
 
 
 if __name__ == '__main__':

@@ -252,9 +252,12 @@ def inference(config, data_loader, model):
     # visualize if don't need visulize, comment
     #Need gt transformed back
     for file in tp:
-        break
+
+        
         path1 = '/public/home/zhaojh1/git_main/HRNet/visual_data/'
         path2 = './visual/'
+        if not os.path.isdir(path2):
+            os.makedirs(path2)
         image = cv2.imread(os.path.join(path1, file))
 
         point_size = 4
