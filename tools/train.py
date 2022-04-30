@@ -101,7 +101,7 @@ def main():
 
     # KFOLD
     dataset = dataset_type(config, is_train=True)
-    kf = KFold(n_splits=5)
+    kf = KFold(n_splits=config.TRAIN.KFOLD_NUM)
     accuracy = []
     MSE = []
     epoch_num = []
@@ -192,7 +192,7 @@ def main():
                 torch.save(model.module.state_dict(), best_model_state_file)
 
             # logger.info('=> saving checkpoint to {}'.format(final_output_dir))
-            print("best:", is_best)
+
             if epoch == config.TRAIN.END_EPOCH - 1:
                 accuracy.append(best_a)
                 MSE.append(best_m)
