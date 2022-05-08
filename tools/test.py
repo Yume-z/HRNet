@@ -74,12 +74,13 @@ def main():
                              is_train=False),
         batch_size=config.TEST.BATCH_SIZE_PER_GPU*len(gpus),
         shuffle=False,
+        prefetch_factor=16,
         num_workers=config.WORKERS,
         pin_memory=config.PIN_MEMORY
     )
 
     a, nme, predictions = function.inference(config, test_loader, model)
-
+    print(a,nme)
     torch.save(predictions, os.path.join(final_output_dir, 'predictions.pth'))
 
 

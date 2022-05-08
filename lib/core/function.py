@@ -253,7 +253,7 @@ def inference(config, data_loader, model):
     #Need gt transformed back
     for file in tp:
 
-        
+        break
         path1 = '/public/home/zhaojh1/git_main/HRNet/visual_data/'
         path2 = './visual/'
         if not os.path.isdir(path2):

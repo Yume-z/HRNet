@@ -135,6 +135,7 @@ def main():
             batch_size=config.TRAIN.BATCH_SIZE_PER_GPU * len(gpus),
             shuffle=config.TRAIN.SHUFFLE,
             num_workers=config.WORKERS,
+            prefetch_factor=16,
             pin_memory=config.PIN_MEMORY)
 
         val_loader = DataLoader(
@@ -142,6 +143,7 @@ def main():
             batch_size=config.TEST.BATCH_SIZE_PER_GPU * len(gpus),
             shuffle=False,
             num_workers=config.WORKERS,
+            prefetch_factor=16,
             pin_memory=config.PIN_MEMORY
         )
 

@@ -36,7 +36,14 @@ class xRAY(data.Dataset):
                 [
                   
                   A.OneOf([
-
+                      A.Compose([
+                          A.Resize(width=512, height=1024),
+                          A.RandomCrop (width=512, height=128),
+                          A.PadIfNeeded(min_height=1024, min_width=512, border_mode=0)]),
+                      A.Compose([
+                          A.Resize(width=512, height=1024),
+                          A.RandomCrop (width=512, height=256),
+                          A.PadIfNeeded(min_height=1024, min_width=512, border_mode=0)]),
                       A.Compose([
                           A.Resize(width=512, height=1024),
                           A.RandomCrop (width=512, height=384),
@@ -85,7 +92,7 @@ class xRAY(data.Dataset):
                          A.MedianBlur(blur_limit=3, p=0.1),  # 中值滤波
                          A.Blur(blur_limit=3, p=0.1),  # 使用随机大小的内核模糊输入图像。
                      ], p=0.2),
-                 A.ShiftScaleRotate(shift_limit=0.0625, scale_limit=0.2, rotate_limit=30, border_mode=0, p=0.2),
+                 A.ShiftScaleRotate(shift_limit=0.0625, scale_limit=0.2, rotate_limit=45, border_mode=0, p=0.2),
                  # 随机应用仿射变换：平移，缩放和旋转输入 will change num
                  #
                  A.OneOf([
@@ -120,8 +127,8 @@ class xRAY(data.Dataset):
         # load annotations
         self.landmarks_frame = pd.read_csv(self.csv_file)
 
-        self.mean = np.array([0.159, 0.158, 0.157], dtype=np.float32)
-        self.std = np.array([0.165, 0.164, 0.164], dtype=np.float32)
+        self.mean = np.array([0.157, 0.156, 0.154], dtype=np.float32)
+        self.std = np.array([0.164, 0.161, 0.159], dtype=np.float32)
 
     def __len__(self):
         return len(self.landmarks_frame)
