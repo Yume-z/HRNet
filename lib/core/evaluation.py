@@ -19,7 +19,7 @@ def get_preds(scores):
     return type: torch.LongTensor
     """
     assert scores.dim() == 4, 'Score maps should be 4-dim'
-    kernel = 5
+    kernel = 7
     pad = (kernel - 1) // 2
     hmax = nn.functional.max_pool2d(
         scores, (kernel, kernel), stride=1, padding=pad)  # max pooling 找到邻域内的最大值
