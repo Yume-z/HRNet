@@ -213,7 +213,16 @@ def inference(config, data_loader, model):
     count_failure_005 = 0
     count_failure_020 = 0
     end = time.time()
-    tp = {}
+    
+    path1 = '/public/home/zhaojh1/git_main/HRNet/data/images/'
+    path2 = './visual/'
+    point_size = 4
+    point_color = (0, 0, 255)  # BGR
+    thickness = 8  # 可以为 0 、4、8
+    if not os.path.isdir(path2):
+        os.makedirs(path2)
+        
+        
     with torch.no_grad():
         for i, (inp, target, meta) in enumerate(data_loader):
             data_time.update(time.time() - end)
@@ -221,14 +230,21 @@ def inference(config, data_loader, model):
             score_map = output.data.cpu()
             preds = decode_preds(score_map, [128, 256])
 
-            # visualize if don't need visulize, comment
-            for j, b in enumerate(preds.tolist()):
-                p = []
-                for item in b:
-                    p.append((int(item[0]), int(item[1])))
-                n = meta['name'][j]
-                tp[n] = p
-                j += 1
+            if config.TEST.VISUALIZE == True:
+                for j, b in enumerate(preds.tolist()):
+                    p = []
+                    for item in b:
+                        p.append((int(item[0]), int(item[1])))
+                    n = meta['name'][j]
+                    image = cv2.imread(os.path.join(path1, n))
+                    
+                    size = image.shape
+                    xt = size[1]/512
+                    yt = size[0]/1024
+                    for point in p:
+                        p = (int(point[0] * xt), int(point[1] * yt))
+                        cv2.circle(image, p, point_size, point_color, thickness)
+                    cv2.imwrite(f"{os.path.join(path2, n[0:5])}.png", image, [int(cv2.IMWRITE_PNG_COMPRESSION), 9])
 
 
             # NME
@@ -251,28 +267,6 @@ def inference(config, data_loader, model):
 
     # visualize if don't need visulize, comment
     #Need gt transformed back
-    for file in tp:
-
-        break
-        path1 = '/public/home/zhaojh1/git_main/HRNet/visual_data/'
-        path2 = './visual/'
-        if not os.path.isdir(path2):
-            os.makedirs(path2)
-        image = cv2.imread(os.path.join(path1, file))
-
-        point_size = 4
-        point_color = (0, 0, 255)  # BGR
-        thickness = 8  # 可以为 0 、4、8
-        lp = tp[file]
-
-        #If there is crop, need to change and use origin data
-        size = image.shape
-        xt = size[1]/512
-        yt = size[0]/1024
-        for point in lp:
-            p = (int(point[0] * xt), int(point[1] * yt))
-            cv2.circle(image, p, point_size, point_color, thickness)
-        cv2.imwrite(f"{os.path.join(path2, file[0:5])}.png", image, [int(cv2.IMWRITE_PNG_COMPRESSION), 9])
 
 
 

@@ -110,6 +110,7 @@ _C.TEST = CN()
 
 # size of images for each device
 _C.TEST.BATCH_SIZE_PER_GPU = 2
+_C.TEST.VISUALIZE = False
 
 
 def update_config(cfg, args):
