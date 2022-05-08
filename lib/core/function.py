@@ -149,10 +149,10 @@ def validate(config, val_loader, model, criterion, epoch, writer_dict):
             # NME
             a_temp, nme_temp = compute_nme(preds, meta)
             # Failure Rate under different threshold
-            failure_008 = (nme_temp > 0.08).sum()
-            failure_010 = (nme_temp > 0.10).sum()
-            count_failure_008 += failure_008
-            count_failure_010 += failure_010
+            failure_005 = (nme_temp > 5).sum()
+            failure_010 = (nme_temp > 20).sum()
+            count_failure_005 += failure_005
+            count_failure_020 += failure_020
 
             a_batch_sum += np.sum(a_temp)
             nme_batch_sum += np.sum(nme_temp)
@@ -168,15 +168,15 @@ def validate(config, val_loader, model, criterion, epoch, writer_dict):
 
     nme = nme_batch_sum / nme_count
     a = a_batch_sum / nme_count
-    failure_008_rate = count_failure_008 / nme_count
-    failure_010_rate = count_failure_010 / nme_count
+    failure_005_rate = count_failure_005 / nme_count
+    failure_020_rate = count_failure_020 / nme_count
 
-    # msg = 'Test Epoch {} time:{:.4f} loss:{:.4f} nme:{:.4f} [008]:{:.4f} ' \
+    # msg = 'Test Epoch {} time:{:.4f} loss:{:.4f} nme:{:.4f} [005]:{:.4f} ' \
     #       '[010]:{:.4f}'.format(epoch, batch_time.avg, losses.avg, nme,
-    #                             failure_008_rate, failure_010_rate)
-    msg = 'Test Epoch {} time:{:.4f} loss:{:.8f} a:{:.4f} mse:{:.4f} [008]:{:.4f} ' \
+    #                             failure_005_rate, failure_020_rate)
+    msg = 'Test Epoch {} time:{:.4f} loss:{:.8f} a:{:.4f} mse:{:.4f} [005]:{:.4f} ' \
           '[010]:{:.4f}'.format(epoch, batch_time.avg, losses.avg, a, nme,
-                                failure_008_rate, failure_010_rate)
+                                failure_005_rate, failure_020_rate)
     logger.info(msg)
 
     # if writer_dict:
@@ -210,8 +210,8 @@ def inference(config, data_loader, model):
     nme_count = 0
     nme_batch_sum = 0
     a_batch_sum = 0
-    count_failure_008 = 0
-    count_failure_010 = 0
+    count_failure_005 = 0
+    count_failure_020 = 0
     end = time.time()
     tp = {}
     with torch.no_grad():
@@ -234,10 +234,10 @@ def inference(config, data_loader, model):
             # NME
             a_temp, nme_temp = compute_nme(preds, meta)
 
-            failure_008 = (nme_temp > 0.08).sum()
-            failure_010 = (nme_temp > 0.10).sum()
-            count_failure_008 += failure_008
-            count_failure_010 += failure_010
+            failure_005 = (nme_temp > 5).sum()
+            failure_020 = (nme_temp > 20).sum()
+            count_failure_005 += failure_005
+            count_failure_020 += failure_020
 
             a_batch_sum += np.sum(a_temp)
             nme_batch_sum += np.sum(nme_temp)
@@ -290,12 +290,12 @@ def inference(config, data_loader, model):
 
     a = a_batch_sum / nme_count
     nme = nme_batch_sum / nme_count
-    failure_008_rate = count_failure_008 / nme_count
-    failure_010_rate = count_failure_010 / nme_count
+    failure_005_rate = count_failure_005 / nme_count
+    failure_020_rate = count_failure_020 / nme_count
 
-    msg = 'Test Results time:{:.4f} loss:{:.8f} a:{:.4f} mse:{:.4f} [008]:{:.4f} ' \
-          '[010]:{:.4f}'.format(batch_time.avg, losses.avg, a, nme,
-                                failure_008_rate, failure_010_rate)
+    msg = 'Test Results time:{:.4f} loss:{:.8f} a:{:.4f} mse:{:.4f} [005]:{:.4f} ' \
+          '[020]:{:.4f}'.format(batch_time.avg, losses.avg, a, nme,
+                                failure_005_rate, failure_020_rate)
     logger.info(msg)
 
     return a, nme, predictions
