@@ -126,8 +126,8 @@ def validate(config, val_loader, model, criterion, epoch, writer_dict):
 
     nme_count = 0
     nme_batch_sum = 0
-    count_failure_008 = 0
-    count_failure_010 = 0
+    count_failure_005 = 0
+    count_failure_020 = 0
     end = time.time()
     a_batch_sum = 0
 
@@ -150,7 +150,7 @@ def validate(config, val_loader, model, criterion, epoch, writer_dict):
             a_temp, nme_temp = compute_nme(preds, meta)
             # Failure Rate under different threshold
             failure_005 = (nme_temp > 5).sum()
-            failure_010 = (nme_temp > 20).sum()
+            failure_020 = (nme_temp > 20).sum()
             count_failure_005 += failure_005
             count_failure_020 += failure_020
 
@@ -172,10 +172,10 @@ def validate(config, val_loader, model, criterion, epoch, writer_dict):
     failure_020_rate = count_failure_020 / nme_count
 
     # msg = 'Test Epoch {} time:{:.4f} loss:{:.4f} nme:{:.4f} [005]:{:.4f} ' \
-    #       '[010]:{:.4f}'.format(epoch, batch_time.avg, losses.avg, nme,
+    #       '[020]:{:.4f}'.format(epoch, batch_time.avg, losses.avg, nme,
     #                             failure_005_rate, failure_020_rate)
     msg = 'Test Epoch {} time:{:.4f} loss:{:.8f} a:{:.4f} mse:{:.4f} [005]:{:.4f} ' \
-          '[010]:{:.4f}'.format(epoch, batch_time.avg, losses.avg, a, nme,
+          '[020]:{:.4f}'.format(epoch, batch_time.avg, losses.avg, a, nme,
                                 failure_005_rate, failure_020_rate)
     logger.info(msg)
 
