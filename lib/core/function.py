@@ -214,37 +214,14 @@ def inference(config, data_loader, model):
     count_failure_020 = 0
     end = time.time()
     
-    path1 = '/public/home/zhaojh1/git_main/HRNet/data/images/'
-    path2 = './visual/'
-    point_size = 4
-    point_color = (0, 0, 255)  # BGR
-    thickness = 8  # 可以为 0 、4、8
-    if not os.path.isdir(path2):
-        os.makedirs(path2)
-        
-        
+    tp = {}
+
     with torch.no_grad():
         for i, (inp, target, meta) in enumerate(data_loader):
             data_time.update(time.time() - end)
             output = model(inp)
             score_map = output.data.cpu()
             preds = decode_preds(score_map, [128, 256])
-
-            if config.TEST.VISUALIZE == True:
-                for j, b in enumerate(preds.tolist()):
-                    p = []
-                    for item in b:
-                        p.append((int(item[0]), int(item[1])))
-                    n = meta['name'][j]
-                    image = cv2.imread(os.path.join(path1, n))
-                    
-                    size = image.shape
-                    xt = size[1]/512
-                    yt = size[0]/1024
-                    for point in p:
-                        p = (int(point[0] * xt), int(point[1] * yt))
-                        cv2.circle(image, p, point_size, point_color, thickness)
-                    cv2.imwrite(f"{os.path.join(path2, n[0:5])}.png", image, [int(cv2.IMWRITE_PNG_COMPRESSION), 9])
 
 
             # NME
@@ -264,9 +241,21 @@ def inference(config, data_loader, model):
             # measure elapsed time
             batch_time.update(time.time() - end)
             end = time.time()
+            
+            if config.TEST.VISUALIZE == True:
+                for j, b in enumerate(preds.tolist()):
+                    p = []
+                    for item in b:
+                        p.append((int(item[0]), int(item[1])))
+                    tp[meta['name'][j]] = p
+
+            
+            
+            print(meta['name'], a_temp, nme_temp)
 
     # visualize if don't need visulize, comment
     #Need gt transformed back
+
 
 
 
@@ -291,5 +280,45 @@ def inference(config, data_loader, model):
           '[020]:{:.4f}'.format(batch_time.avg, losses.avg, a, nme,
                                 failure_005_rate, failure_020_rate)
     logger.info(msg)
+    
+
+
+    if config.TEST.VISUALIZE == True:
+    
+        path1 = '/public/home/zhaojh1/git_main/HRNet/data/images/'
+        path2 = './visual/'
+        point_size = 4
+        thickness = 8  # 可以为 0 、4、8
+        if not os.path.isdir(path2):
+            os.makedirs(path2)
+    
+        for file in tp:
+
+
+            image = cv2.imread(os.path.join(path1, file))
+            lp = tp[file]
+            
+            
+            size = image.shape
+            xt = size[1]/512
+            yt = size[0]/1024
+            for i, point in enumerate(lp):
+                if i % 6 == 0:
+                    point_color=(0, 0, 255)   #BGR
+                elif i % 6 == 1:
+                    point_color=(0, 255, 255)  #y
+                elif i % 6 == 2:
+                    point_color=(0, 255, 0)
+                elif i % 6 == 3:
+                    point_color=(255, 255, 0)  #c
+                elif i % 6 == 4:
+                    point_color=(255, 0, 0)   
+                else:
+                    point_color=(255, 0, 255)  #m
+                    
+                point = (int(point[0] * xt), int(point[1] * yt))
+                cv2.circle(image, point, point_size, point_color, thickness)
+                
+            cv2.imwrite(f"{os.path.join(path2, file[0:5])}.png", image, [int(cv2.IMWRITE_PNG_COMPRESSION), 9])
 
     return a, nme, predictions

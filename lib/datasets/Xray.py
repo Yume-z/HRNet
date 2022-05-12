@@ -70,7 +70,6 @@ class xRAY(data.Dataset):
                  # # whether predict as the point sequence? And output size need to change?Or just change input size
                  #
                  #
-                 A.HorizontalFlip(p=0.5),
                  # A.VerticalFlip(p=0.5),
                  # A.OneOf([
                  #     A.GaussNoise(),  # 将高斯噪声应用于输入图像。

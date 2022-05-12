@@ -23,7 +23,7 @@ from lib.core import function
 
 def parse_args():
 
-    parser = argparse.ArgumentParser(description='Train Face Alignment')
+    parser = argparse.ArgumentParser()
 
     parser.add_argument('--cfg', help='experiment configuration filename',
                         required=True, type=str)
@@ -54,7 +54,7 @@ def main():
     gpus = list(config.GPUS)
     
     
-    model = models.get_face_alignment_net(config)
+    model = models.get_net(config)
 
     
     model = nn.DataParallel(model, device_ids=gpus).cuda()
@@ -74,7 +74,7 @@ def main():
                              is_train=False),
         batch_size=config.TEST.BATCH_SIZE_PER_GPU*len(gpus),
         shuffle=False,
-        prefetch_factor=16,
+        prefetch_factor=8,
         num_workers=config.WORKERS,
         pin_memory=config.PIN_MEMORY
     )

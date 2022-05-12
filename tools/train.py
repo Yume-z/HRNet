@@ -15,6 +15,7 @@ from tensorboardX import SummaryWriter
 from torch.utils.data import DataLoader
 import sys
 
+
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 import lib.models as models
 from lib.config import config, update_config
@@ -25,7 +26,8 @@ from sklearn.model_selection import KFold
 
 
 def parse_args():
-    parser = argparse.ArgumentParser(description='Train Face Alignment')
+
+    parser = argparse.ArgumentParser()
 
     parser.add_argument('--cfg', help='experiment configuration filename',
                         required=True, type=str)
@@ -48,54 +50,7 @@ def main():
     cudnn.determinstic = config.CUDNN.DETERMINISTIC
     cudnn.enabled = config.CUDNN.ENABLED
 
-    #model = models.get_face_alignment_net(config)
 
-    # copy model files
-    #writer_dict = {
-    #    'writer': SummaryWriter(log_dir=tb_log_dir),
-    #    'train_global_steps': 0,
-    #    'valid_global_steps': 0,
-    #}
-
-    #gpus = list(config.GPUS)
-    #model = nn.DataParallel(model, device_ids=gpus).cuda()
-
-    # loss
-    #criterion = torch.nn.MSELoss(reduction='mean').cuda()
-
-    #optimizer = utils.get_optimizer(config, model)
-    
-    
-    
-    # best_nme = 100
-    # best_a = 0
-    # last_epoch = config.TRAIN.BEGIN_EPOCH
-
-    ##checkpoint
-    # if config.TRAIN.RESUME:
-    #     model_state_file = os.path.join(final_output_dir,
-    #                                     'latest.pth')
-    #     if os.path.islink(model_state_file):
-    #         checkpoint = torch.load(model_state_file)
-    #         last_epoch = checkpoint['epoch']
-    #         best_nme = checkpoint['best_nme']
-    #         model.load_state_dict(checkpoint['state_dict'])
-    #         optimizer.load_state_dict(checkpoint['optimizer'])
-    #         print("=> loaded checkpoint (epoch {})"
-    #               .format(checkpoint['epoch']))
-    #     else:
-    #         print("=> no checkpoint found")
-
-    # if isinstance(config.TRAIN.LR_STEP, list):
-    #     lr_scheduler = torch.optim.lr_scheduler.MultiStepLR(
-    #         optimizer, config.TRAIN.LR_STEP,
-    #         config.TRAIN.LR_FACTOR, last_epoch - 1
-    #     )
-    # else:
-    #     lr_scheduler = torch.optim.lr_scheduler.StepLR(
-    #         optimizer, config.TRAIN.LR_STEP,
-    #         config.TRAIN.LR_FACTOR, last_epoch - 1
-    #     )
 
     dataset_type = get_dataset(config)
 
@@ -105,16 +60,18 @@ def main():
     accuracy = []
     MSE = []
     epoch_num = []
+    
 
     for fold, (t, v) in enumerate(kf.split(dataset)):
 
-
-        model = models.get_face_alignment_net(config)
-
+        torch.set_num_threads(4)
+        
+        model = models.get_net(config)
+        
         gpus = list(config.GPUS)
 
         model = nn.DataParallel(model, device_ids=gpus).cuda()
-        
+      
         criterion = torch.nn.MSELoss(reduction='mean').cuda()
         
         optimizer = utils.get_optimizer(config, model)
@@ -126,6 +83,7 @@ def main():
             'valid_global_steps': 0,
         }
 
+        
 
 
         train_set = torch.utils.data.dataset.Subset(dataset_type(config, is_train=True, if_trans=True), t)
@@ -135,7 +93,7 @@ def main():
             batch_size=config.TRAIN.BATCH_SIZE_PER_GPU * len(gpus),
             shuffle=config.TRAIN.SHUFFLE,
             num_workers=config.WORKERS,
-            prefetch_factor=16,
+            prefetch_factor=8,
             pin_memory=config.PIN_MEMORY)
 
         val_loader = DataLoader(
@@ -143,9 +101,12 @@ def main():
             batch_size=config.TEST.BATCH_SIZE_PER_GPU * len(gpus),
             shuffle=False,
             num_workers=config.WORKERS,
-            prefetch_factor=16,
+            prefetch_factor=8,
             pin_memory=config.PIN_MEMORY
         )
+        
+        
+        
 
         best_a = 0
         best_m = 0
