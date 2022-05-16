@@ -469,7 +469,7 @@ class HighResolutionNet(nn.Module):
             self.load_state_dict(model_dict)
 
 
-def get_face_alignment_net(config, **kwargs):
+def get_net(config, **kwargs):
     #if can change config of modle temporarily here?
     model = HighResolutionNet(config, **kwargs)
     pretrained = config.MODEL.PRETRAINED if config.MODEL.INIT_WEIGHTS else ''
