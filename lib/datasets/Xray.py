@@ -70,6 +70,7 @@ class xRAY(data.Dataset):
                  # # whether predict as the point sequence? And output size need to change?Or just change input size
                  #
                  #
+
                  # A.VerticalFlip(p=0.5),
                  # A.OneOf([
                  #     A.GaussNoise(),  # 将高斯噪声应用于输入图像。
@@ -91,7 +92,7 @@ class xRAY(data.Dataset):
                          A.MedianBlur(blur_limit=3, p=0.1),  # 中值滤波
                          A.Blur(blur_limit=3, p=0.1),  # 使用随机大小的内核模糊输入图像。
                      ], p=0.2),
-                 A.ShiftScaleRotate(shift_limit=0.0625, scale_limit=0.2, rotate_limit=45, border_mode=0, p=0.2),
+                 A.ShiftScaleRotate(shift_limit=0.0625, scale_limit=0.2, rotate_limit=30, border_mode=0, p=0.2),
                  # 随机应用仿射变换：平移，缩放和旋转输入 will change num
                  #
                  A.OneOf([
@@ -126,8 +127,8 @@ class xRAY(data.Dataset):
         # load annotations
         self.landmarks_frame = pd.read_csv(self.csv_file)
 
-        self.mean = np.array([0.157, 0.156, 0.154], dtype=np.float32)
-        self.std = np.array([0.164, 0.161, 0.159], dtype=np.float32)
+        self.mean = np.array([0.15886, 0.15760, 0.15715], dtype=np.float32)
+        self.std = np.array([0.16471, 0.16417, 0.16357], dtype=np.float32)
 
     def __len__(self):
         return len(self.landmarks_frame)
@@ -156,6 +157,38 @@ class xRAY(data.Dataset):
         # imggg = np.array(Image.open(image_path).convert('L'), dtype=np.float32)
         # print('image', imggg.shape)
 
+        if img.shape[0]/img.shape[1] > 2:
+            
+
+            t = img.shape[0]//2
+          
+            padding = A.Compose(
+          
+              [ A.PadIfNeeded(min_width=t, border_mode=0)],
+          
+              keypoint_params=A.KeypointParams(format='xy')
+          
+            )
+        
+        else:
+        
+            t = img.shape[1]*2
+          
+            padding = A.Compose(
+          
+              [ A.PadIfNeeded(min_height=t, border_mode=0)],
+          
+              keypoint_params=A.KeypointParams(format='xy')
+          
+            )
+        
+        padded = padding(image=img, keypoints=pts)
+        
+        img = padded['image']
+        
+        pts = padded['keypoints']
+        
+        
         # data agumentation
         transform = self.transform
         transformed = transform(image=img, keypoints=pts)
