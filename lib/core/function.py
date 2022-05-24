@@ -200,7 +200,7 @@ def validate(config, val_loader, model, criterion, epoch, writer_dict):
         writer = writer_dict['writer']
         global_steps = writer_dict['valid_global_steps']
         writer.add_scalar('valid_loss', losses.avg, global_steps)
-        writer.add_scalar('valid_a', a, global_steps)
+        writer.add_scalar('valid_a', a5, global_steps)
         writer.add_scalar('valid_mse', nme, global_steps)
         writer_dict['valid_global_steps'] = global_steps + 1
 

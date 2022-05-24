@@ -57,7 +57,6 @@ class xRAY(data.Dataset):
                                   self.landmarks_frame.iloc[idx, 0])
                                   
         x,y = self.input_size[1], self.input_size[0]
-        
         pts = self.landmarks_frame.iloc[idx, 1:].values
         pts = pts.astype('float').reshape(-1, 2)
 
@@ -69,6 +68,7 @@ class xRAY(data.Dataset):
             padding = A.Compose(       
               [ 
               A.PadIfNeeded(min_width=t, border_mode=0),
+              A.PadIfNeeded(min_height=y, min_width=x, border_mode=0),
               A.Resize(width=x, height=y)
               ], 
               keypoint_params=A.KeypointParams(format='xy')       
@@ -78,6 +78,7 @@ class xRAY(data.Dataset):
             padding = A.Compose(    
               [ 
               A.PadIfNeeded(min_height=t, border_mode=0),
+              A.PadIfNeeded(min_height=y, min_width=x, border_mode=0),
               A.Resize(width=x, height=y)
               ],
               keypoint_params=A.KeypointParams(format='xy')
@@ -89,8 +90,8 @@ class xRAY(data.Dataset):
         
    
         if self.if_trans:
-            r = int(random.uniform(1,9))*(y/8)
-            
+            r = int(random.uniform(1,9))*int((y/8))
+
             transform = A.Compose(
                 [
                 
@@ -123,7 +124,7 @@ class xRAY(data.Dataset):
             transformed = transform(image=img, keypoints=pts)
             img = transformed['image']
             pts = transformed['keypoints'] 
-     
+         
                  
                  
         

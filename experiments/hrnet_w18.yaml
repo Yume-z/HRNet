@@ -1,5 +1,5 @@
-GPUS: (0, 1, 2, 3)
-WORKERS: 16
+GPUS: (0, 1)
+WORKERS: 8
 PRINT_FREQ: 50
 
 DATASET:
@@ -17,11 +17,11 @@ MODEL:
   PRETRAINED: '/public/home/zhaojh1/git_main/test-32/pose_hrnet_w32_384x288.pth'
   SIGMA: 1.0
   IMAGE_SIZE:
+    - 2048
     - 1024
-    - 512
   HEATMAP_SIZE:
+    - 512
     - 256
-    - 128
   EXTRA:
     FINAL_CONV_KERNEL: 1
     STAGE2:
