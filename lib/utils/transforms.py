@@ -13,7 +13,7 @@ import numpy as np
 from PIL import Image
 
 
-def get_transform(output_size, rot=0):
+def get_transform(output_size):
     """
     General image processing functions
     """
@@ -53,9 +53,9 @@ def get_transform(output_size, rot=0):
     return t
 
 
-def transform_pixel(pt, output_size, invert=0, rot=0):
+def transform_pixel(pt, output_size, invert=0):
     # Transform pixel location to different reference
-    t = get_transform(output_size, rot=rot)
+    t = get_transform(output_size)
     # print("t:", t)
     if invert:
         t = np.linalg.inv(t)
@@ -67,7 +67,7 @@ def transform_pixel(pt, output_size, invert=0, rot=0):
 
 def transform_preds(coords, output_size):
     for p in range(coords.size(0)):
-        coords[p, 0:2] = torch.tensor(transform_pixel(coords[p, 0:2], output_size, 1, 0))
+        coords[p, 0:2] = torch.tensor(transform_pixel(coords[p, 0:2], output_size, 1))
     return coords
 
 

@@ -5,7 +5,7 @@ PRINT_FREQ: 50
 DATASET:
   DATASET: Xray
   ROOT: '/public/home/zhaojh1/git_main/HRNet/data/images/'
-  TRAINSET: '/public/home/zhaojh1/git_main/HRNet/data/train.csv'
+  TRAINSET: '/public/home/zhaojh1/git_main/HRNet/data/test.csv'
   TESTSET: '/public/home/zhaojh1/git_main/HRNet/data/test.csv'
   FLIP: false
   SCALE_FACTOR: 1.
@@ -68,12 +68,12 @@ TRAIN:
   BATCH_SIZE_PER_GPU: 2
   SHUFFLE: true
   BEGIN_EPOCH: 0
-  END_EPOCH: 500
+  END_EPOCH: 320
   RESUME: false
   OPTIMIZER: 'adam'
   LR: 0.001
   WD: 0.0
-  LR_STEP: [460, 490]
+  LR_STEP: [300, 310]
   MOMENTUM: 0.0
   NESTEROV: false
 TEST:

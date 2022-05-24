@@ -129,7 +129,11 @@ def validate(config, val_loader, model, criterion, epoch, writer_dict):
     count_failure_005 = 0
     count_failure_020 = 0
     end = time.time()
-    a_batch_sum = 0
+    a_batch_sum10 = 0
+    a_batch_sum7 = 0
+    a_batch_sum5 = 0
+    a_batch_sum3 = 0
+    a_batch_sum1 = 0
 
     with torch.no_grad():
         for i, (inp, target, meta) in enumerate(val_loader):
@@ -154,7 +158,11 @@ def validate(config, val_loader, model, criterion, epoch, writer_dict):
             count_failure_005 += failure_005
             count_failure_020 += failure_020
 
-            a_batch_sum += np.sum(a_temp)
+            a_batch_sum10 += np.sum(a_temp[0])
+            a_batch_sum7 += np.sum(a_temp[1])
+            a_batch_sum5 += np.sum(a_temp[2])
+            a_batch_sum3 += np.sum(a_temp[3])
+            a_batch_sum1 += np.sum(a_temp[4])
             nme_batch_sum += np.sum(nme_temp)
             nme_count = nme_count + preds.size(0)
             #for n in range(score_map.size(0)):
@@ -167,16 +175,19 @@ def validate(config, val_loader, model, criterion, epoch, writer_dict):
             end = time.time()
 
     nme = nme_batch_sum / nme_count
-    a = a_batch_sum / nme_count
+    a10 = a_batch_sum10 / nme_count
+    a7 = a_batch_sum7 / nme_count
+    a5 = a_batch_sum5 / nme_count
+    a3 = a_batch_sum3 / nme_count
+    a1 = a_batch_sum1 / nme_count
     failure_005_rate = count_failure_005 / nme_count
     failure_020_rate = count_failure_020 / nme_count
 
     # msg = 'Test Epoch {} time:{:.4f} loss:{:.4f} nme:{:.4f} [005]:{:.4f} ' \
     #       '[020]:{:.4f}'.format(epoch, batch_time.avg, losses.avg, nme,
     #                             failure_005_rate, failure_020_rate)
-    msg = 'Test Epoch {} time:{:.4f} loss:{:.8f} a:{:.4f} mse:{:.4f} [005]:{:.4f} ' \
-          '[020]:{:.4f}'.format(epoch, batch_time.avg, losses.avg, a, nme,
-                                failure_005_rate, failure_020_rate)
+    msg = 'Test Epoch {} time:{:.4f} loss:{:.8f} a10:{:.4f} a7:{:.4f} a5:{:.4f} a3:{:.4f} a1:{:.4f} mse:{:.4f} [005]:{:.4f} ' \
+          '[010]:{:.4f}'.format(epoch, batch_time.avg, losses.avg, a10, a7, a5, a3, a1, nme, failure_005_rate, failure_020_rate)
     logger.info(msg)
 
     # if writer_dict:
@@ -194,7 +205,7 @@ def validate(config, val_loader, model, criterion, epoch, writer_dict):
         writer_dict['valid_global_steps'] = global_steps + 1
 
     # return nme, predictions
-    return a, nme, predictions
+    return (a10,a7,a5,a3,a1), nme, predictions
 
 
 def inference(config, data_loader, model):
@@ -206,10 +217,13 @@ def inference(config, data_loader, model):
     predictions = torch.zeros((len(data_loader.dataset), num_classes, 2))
 
     model.eval()
-
+    a_batch_sum10 = 0
+    a_batch_sum7 = 0
+    a_batch_sum5 = 0
+    a_batch_sum3 = 0
+    a_batch_sum1 = 0
     nme_count = 0
     nme_batch_sum = 0
-    a_batch_sum = 0
     count_failure_005 = 0
     count_failure_020 = 0
     end = time.time()
@@ -232,7 +246,11 @@ def inference(config, data_loader, model):
             count_failure_005 += failure_005
             count_failure_020 += failure_020
 
-            a_batch_sum += np.sum(a_temp)
+            a_batch_sum10 += np.sum(a_temp[0])
+            a_batch_sum7 += np.sum(a_temp[1])
+            a_batch_sum5 += np.sum(a_temp[2])
+            a_batch_sum3 += np.sum(a_temp[3])
+            a_batch_sum1 += np.sum(a_temp[4])
             nme_batch_sum += np.sum(nme_temp)
             nme_count = nme_count + preds.size(0)
             # for n in range(score_map.size(0)):
@@ -271,14 +289,17 @@ def inference(config, data_loader, model):
     #             cv2.imwrite(f"/public/home/zhaojh1/git_main/HRNet/visual/{file}.png", image, [int(cv2.IMWRITE_PNG_COMPRESSION), 9])
     #         j += 1
 
-    a = a_batch_sum / nme_count
+    a10 = a_batch_sum10 / nme_count
+    a7 = a_batch_sum7 / nme_count
+    a5 = a_batch_sum5 / nme_count
+    a3 = a_batch_sum3 / nme_count
+    a1 = a_batch_sum1 / nme_count
     nme = nme_batch_sum / nme_count
     failure_005_rate = count_failure_005 / nme_count
     failure_020_rate = count_failure_020 / nme_count
 
-    msg = 'Test Results time:{:.4f} loss:{:.8f} a:{:.4f} mse:{:.4f} [005]:{:.4f} ' \
-          '[020]:{:.4f}'.format(batch_time.avg, losses.avg, a, nme,
-                                failure_005_rate, failure_020_rate)
+    msg = 'Test Results time:{:.4f} loss:{:.8f} a10:{:.4f} a7:{:.4f} a5:{:.4f} a3:{:.4f} a1:{:.4f} mse:{:.4f} [005]:{:.4f} ' \
+          '[020]:{:.4f}'.format(batch_time.avg, losses.avg, a10, a7, a5, a3, a1, nme, failure_005_rate, failure_020_rate)
     logger.info(msg)
     
 
@@ -321,4 +342,4 @@ def inference(config, data_loader, model):
                 
             cv2.imwrite(f"{os.path.join(path2, file[0:5])}.png", image, [int(cv2.IMWRITE_PNG_COMPRESSION), 9])
 
-    return a, nme, predictions
+    return (a10,a7,a5,a3,a1), nme, predictions

@@ -108,7 +108,7 @@ def main():
         
         
 
-        best_a = 0
+        best_a5 = 0
         best_m = 0
         best_epoch = 0
         last_epoch = config.TRAIN.BEGIN_EPOCH
@@ -143,8 +143,8 @@ def main():
 
             # is_best = nme < best_nme
             # best_nme = min(nme, best_nme)
-            is_best = a > best_a
-            best_a = max(a, best_a)
+            is_best = a[2] > best_a5
+            best_a = max(a[2], best_a5)
             
             
             if is_best == True:
@@ -157,10 +157,10 @@ def main():
             # logger.info('=> saving checkpoint to {}'.format(final_output_dir))
 
             if epoch == config.TRAIN.END_EPOCH - 1:
-                accuracy.append(best_a)
+                accuracy.append(best_a5)
                 MSE.append(best_m)
                 epoch_num.append(best_epoch)
-                print(fold, best_epoch, a, best_a, nme, best_m)
+                print(fold, best_epoch, a[2], best_a5, nme, best_m)
             # utils.save_checkpoint(
             #     {"state_dict": model,
             #      "epoch": epoch + 1,
@@ -170,11 +170,10 @@ def main():
             #      }, predictions, is_best, final_output_dir, 'checkpoint_{}.pth'.format(epoch))
 
         print(f"{fold}th fold is finished")
-        final_model_state_file = os.path.join(final_output_dir,
-                                              f'{fold}final_state.pth')
-        logger.info(f'saving {fold}th model state to {final_model_state_file}')
+        # final_model_state_file = os.path.join(final_output_dir, f'{fold}final_state.pth')
+        # logger.info(f'saving {fold}th model state to {final_model_state_file}')
 
-        torch.save(model.module.state_dict(), final_model_state_file)
+        # torch.save(model.module.state_dict(), final_model_state_file)
         writer_dict['writer'].close()
 
         # debug and test

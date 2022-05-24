@@ -65,41 +65,43 @@ def compute_nme(preds, meta):
     N = preds.shape[0]
     L = preds.shape[1]
     rmse = np.zeros(N)
-    a = np.zeros(N)
-    # SMAPE = np.zeros(N)
+    a = np.zeros((5, N))
 
-    # visualize
-    # for b in preds.tolist():
-    #     p = []
-    #     for item in b:
-    #         p.append( ( int(item[0]), int(item[1]) ) )
-    #
 
     for i in range(N):
+        # size = meta['size'][i][0]/1024
         pts_pred, pts_gt = preds[i, ], target[i, ]
 
         d = np.linalg.norm(pts_pred - pts_gt, axis=1)
+        # print(size, d)
         m = d.mean()
-        j = 0
+        j1,j2,j3,j4,j5 = 0,0,0,0,0
         for item in d:
-            if item/10 <= 1:
-                j += 1
-        a[i] = j/L
+            # if item/10*size<= 1:
+            if item/10<= 1:
+                j1 += 1
+            if item/7<= 1:
+                j2 += 1
+            if item/5<= 1:
+                j3 += 1
+            if item/3<= 1:
+                j4 += 1
+            if item/1<= 1:
+                j5 += 1
+        
+                
+        a[0,i] = j1/L
+        a[1,i] = j2/L
+        a[2,i] = j3/L
+        a[3,i] = j4/L
+        a[4,i] = j5/L
 
-        # print(f"m:{m},a:{a[i]}.")
-        # if a[i] <= 0.6:
-        #     print(meta['name'])
-
-        # rmse[i] = np.sum(np.linalg.norm(pts_pred - pts_gt, axis=1)) / L
         rmse[i] = np.sum(np.power(np.linalg.norm(pts_pred - pts_gt, axis=1), 2)) / L  # mse
         #accuracy
-        # SMAPE[i] = (np.sum(np.linalg.norm(pts_pred - pts_gt, axis=1) / (np.linalg.norm(pts_pred, axis=1) + (np.linalg.norm(pts_gt, axis=1))))) * 2 * 100 / L  evaluate angle
-        # print(f"pts_pred:{pts_pred},pts_gt:{pts_gt},loss{rmse[i]}.")
-
 
     # return rmse
     return a, rmse
-    # return SMAPE
+
 
 
 def decode_preds(output, res):

@@ -2,6 +2,7 @@
 #SBATCH --job-name=hr
 #SBATCH --partition=normal
 #SBATCH -N 1
+#SBATCH --nodelist=sist_gpu51
 #SBATCH --time=120:00:00
 #SBATCH --cpus-per-task=20
 #SBATCH --gres=gpu:4
