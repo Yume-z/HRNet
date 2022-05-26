@@ -108,9 +108,14 @@ def main():
         
         
 
-        best_a5 = 0
-        best_m = 0
-        best_epoch = 0
+        best_a5 = 0.90
+        best_m = 100.0
+        best_epocha5 = 0
+        best_epochm = 0
+        m_a5 = 0.0
+        a_a5 = (0.0,0.0,0.0,0.0,0.0)
+        a_m = (0.0,0.0,0.0,0.0,0.0)
+        
         last_epoch = config.TRAIN.BEGIN_EPOCH
         if isinstance(config.TRAIN.LR_STEP, list):
             lr_scheduler = torch.optim.lr_scheduler.MultiStepLR(
@@ -143,24 +148,39 @@ def main():
 
             # is_best = nme < best_nme
             # best_nme = min(nme, best_nme)
-            is_best = a[2] > best_a5
-            best_a = max(a[2], best_a5)
+            is_besta5 = a[2] > best_a5
+            is_bestm = nme <best_m
             
             
-            if is_best == True:
-                best_epoch = epoch
-                best_m = nme
+            best_a5 = max(a[2], best_a5)
+            best_m = min(nme, best_m)
+            
+            if is_besta5 == True:
+                best_epocha5 = epoch
+                m_a5 = nme
+                a_a5 = a
                 best_model_state_file = os.path.join(final_output_dir,
                                                       f'{fold}best_state.pth')
+                torch.save(model.module.state_dict(), best_model_state_file)
+                
+            if is_bestm == True:
+                best_epochm = epoch
+                a_m = a
+                best_model_state_file = os.path.join(final_output_dir,
+                                                      f'{fold}bestmse_state.pth')
                 torch.save(model.module.state_dict(), best_model_state_file)
 
             # logger.info('=> saving checkpoint to {}'.format(final_output_dir))
 
             if epoch == config.TRAIN.END_EPOCH - 1:
                 accuracy.append(best_a5)
+                epoch_num.append(best_epocha5)
+                epoch_num.append(best_epochm)
                 MSE.append(best_m)
-                epoch_num.append(best_epoch)
-                print(fold, best_epoch, a[2], best_a5, nme, best_m)
+
+                print(f"fold：{fold}, best_epoch_a5:{best_epocha5}, best_a5:{best_a5:.4f}, m_a5:{m_a5:.4f}, a10:{a_a5[0]:.4f}, a7:{a_a5[1]:.4f}, a3:{a_a5[3]:.4f}, a1:{a_a5[4]:.4f}")
+                print(f"fold：{fold}, best_epoch_m:{best_epochm}, a5_m:{a_m[2]:.4f}, best_m:{best_m:.4f}, a10:{a_m[0]:.4f}, a7:{a_m[1]:.4f}, a3:{a_m[3]:.4f}, a1:{a_m[4]:.4f}")
+
             # utils.save_checkpoint(
             #     {"state_dict": model,
             #      "epoch": epoch + 1,
@@ -179,9 +199,9 @@ def main():
         # debug and test
         
 
-    print(accuracy)
-    print(MSE)
-    print(epoch_num)
+    print(f'accuracy:{accuracy}')
+    print(f'MSE:{MSE}')
+    print(f'best_a_m_epoch_num:{epoch_num}')
 
 
 if __name__ == '__main__':

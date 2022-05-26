@@ -1,5 +1,5 @@
-GPUS: (0, 1)
-WORKERS: 8
+GPUS: (0, 1, 2, 3)
+WORKERS: 16
 PRINT_FREQ: 50
 
 DATASET:
@@ -17,11 +17,11 @@ MODEL:
   PRETRAINED: '/public/home/zhaojh1/git_main/test-32/pose_hrnet_w32_384x288.pth'
   SIGMA: 1.0
   IMAGE_SIZE:
-    - 2048
     - 1024
-  HEATMAP_SIZE:
     - 512
+  HEATMAP_SIZE:
     - 256
+    - 128
   EXTRA:
     FINAL_CONV_KERNEL: 1
     STAGE2:
@@ -68,12 +68,12 @@ TRAIN:
   BATCH_SIZE_PER_GPU: 2
   SHUFFLE: true
   BEGIN_EPOCH: 0
-  END_EPOCH: 320
+  END_EPOCH: 360
   RESUME: false
   OPTIMIZER: 'adam'
   LR: 0.001
   WD: 0.0
-  LR_STEP: [300, 310]
+  LR_STEP: [320, 350]
   MOMENTUM: 0.0
   NESTEROV: false
 TEST:
