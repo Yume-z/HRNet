@@ -308,21 +308,23 @@ def inference(config, data_loader, model):
     
         path1 = '/public/home/zhaojh1/git_main/HRNet/data/images/'
         path2 = './visual/'
-        point_size = 4
-        thickness = 8  # 可以为 0 、4、8
+        point_size = 1
+        thickness = 4  # 可以为 0 、4、8
         if not os.path.isdir(path2):
             os.makedirs(path2)
     
         for file in tp:
 
 
-            image = cv2.imread(os.path.join(path1, file))
+            img = cv2.imread(os.path.join(path1, file))
             lp = tp[file]
+            transform = A.Resize(width=512, height=1024)
+            transformed = transform(image=img)
+            image = transformed['image']
             
-            
-            size = image.shape
-            xt = size[1]/512
-            yt = size[0]/1024
+            # size = image.shape
+            # xt = size[1]/512
+            # yt = size[0]/1024
             for i, point in enumerate(lp):
                 if i % 6 == 0:
                     point_color=(0, 0, 255)   #BGR
@@ -337,7 +339,9 @@ def inference(config, data_loader, model):
                 else:
                     point_color=(255, 0, 255)  #m
                     
-                point = (int(point[0] * xt), int(point[1] * yt))
+                # point = (int(point[0] * xt), int(point[1] * yt))
+                point = (int(point[0]), int(point[1]))
+                 
                 cv2.circle(image, point, point_size, point_color, thickness)
                 
             cv2.imwrite(f"{os.path.join(path2, file[0:5])}.png", image, [int(cv2.IMWRITE_PNG_COMPRESSION), 9])
