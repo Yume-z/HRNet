@@ -2,3 +2,11 @@ hdf5storage
 yacs
 scikit-image
 pillow
+tensorboardX
+numpy
+scipy
+matplotlib
+sklearn
+pandas
+albumentations
+opencv-python

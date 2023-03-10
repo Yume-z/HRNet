@@ -15,7 +15,6 @@ from tensorboardX import SummaryWriter
 from torch.utils.data import DataLoader
 import sys
 
-
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 import lib.models as models
 from lib.config import config, update_config
@@ -26,7 +25,6 @@ from sklearn.model_selection import KFold
 
 
 def parse_args():
-
     parser = argparse.ArgumentParser()
 
     parser.add_argument('--cfg', help='experiment configuration filename',
@@ -50,8 +48,6 @@ def main():
     cudnn.determinstic = config.CUDNN.DETERMINISTIC
     cudnn.enabled = config.CUDNN.ENABLED
 
-
-
     dataset_type = get_dataset(config)
 
     # KFOLD
@@ -60,31 +56,26 @@ def main():
     accuracy = []
     MSE = []
     epoch_num = []
-    
 
     for fold, (t, v) in enumerate(kf.split(dataset)):
 
         torch.set_num_threads(4)
-        
+
         model = models.get_net(config)
-        
+
         gpus = list(config.GPUS)
 
         model = nn.DataParallel(model, device_ids=gpus).cuda()
-      
-        criterion = torch.nn.MSELoss(reduction='mean').cuda()
-        
-        optimizer = utils.get_optimizer(config, model)
 
+        criterion = torch.nn.MSELoss(reduction='mean').cuda()
+
+        optimizer = utils.get_optimizer(config, model)
 
         writer_dict = {
             'writer': SummaryWriter(log_dir=tb_log_dir),
             'train_global_steps': 0,
             'valid_global_steps': 0,
         }
-
-        
-
 
         train_set = torch.utils.data.dataset.Subset(dataset_type(config, is_train=True, if_trans=True), t)
         val_set = torch.utils.data.dataset.Subset(dataset, v)
@@ -104,18 +95,15 @@ def main():
             prefetch_factor=16,
             pin_memory=config.PIN_MEMORY
         )
-        
-        
-        
 
         best_a5 = 0.90
         best_m = 100.0
         best_epocha5 = 0
         best_epochm = 0
         m_a5 = 0.0
-        a_a5 = (0.0,0.0,0.0,0.0,0.0)
-        a_m = (0.0,0.0,0.0,0.0,0.0)
-        
+        a_a5 = (0.0, 0.0, 0.0, 0.0, 0.0)
+        a_m = (0.0, 0.0, 0.0, 0.0, 0.0)
+
         last_epoch = config.TRAIN.BEGIN_EPOCH
         if isinstance(config.TRAIN.LR_STEP, list):
             lr_scheduler = torch.optim.lr_scheduler.MultiStepLR(
@@ -149,25 +137,24 @@ def main():
             # is_best = nme < best_nme
             # best_nme = min(nme, best_nme)
             is_besta5 = a[2] > best_a5
-            is_bestm = nme <best_m
-            
-            
+            is_bestm = nme < best_m
+
             best_a5 = max(a[2], best_a5)
             best_m = min(nme, best_m)
-            
+
             if is_besta5 == True:
                 best_epocha5 = epoch
                 m_a5 = nme
                 a_a5 = a
                 best_model_state_file = os.path.join(final_output_dir,
-                                                      f'{fold}best_state.pth')
+                                                     f'{fold}best_state.pth')
                 torch.save(model.module.state_dict(), best_model_state_file)
-                
+
             if is_bestm == True:
                 best_epochm = epoch
                 a_m = a
                 best_model_state_file = os.path.join(final_output_dir,
-                                                      f'{fold}bestmse_state.pth')
+                                                     f'{fold}bestmse_state.pth')
                 torch.save(model.module.state_dict(), best_model_state_file)
 
             # logger.info('=> saving checkpoint to {}'.format(final_output_dir))
@@ -178,8 +165,10 @@ def main():
                 epoch_num.append(best_epochm)
                 MSE.append(best_m)
 
-                print(f"fold：{fold}, best_epoch_a5:{best_epocha5}, best_a5:{best_a5:.4f}, m_a5:{m_a5:.4f}, a10:{a_a5[0]:.4f}, a7:{a_a5[1]:.4f}, a3:{a_a5[3]:.4f}, a1:{a_a5[4]:.4f}")
-                print(f"fold：{fold}, best_epoch_m:{best_epochm}, a5_m:{a_m[2]:.4f}, best_m:{best_m:.4f}, a10:{a_m[0]:.4f}, a7:{a_m[1]:.4f}, a3:{a_m[3]:.4f}, a1:{a_m[4]:.4f}")
+                print(
+                    f"fold：{fold}, best_epoch_a5:{best_epocha5}, best_a5:{best_a5:.4f}, m_a5:{m_a5:.4f}, a10:{a_a5[0]:.4f}, a7:{a_a5[1]:.4f}, a3:{a_a5[3]:.4f}, a1:{a_a5[4]:.4f}")
+                print(
+                    f"fold：{fold}, best_epoch_m:{best_epochm}, a5_m:{a_m[2]:.4f}, best_m:{best_m:.4f}, a10:{a_m[0]:.4f}, a7:{a_m[1]:.4f}, a3:{a_m[3]:.4f}, a1:{a_m[4]:.4f}")
 
             # utils.save_checkpoint(
             #     {"state_dict": model,
@@ -197,7 +186,6 @@ def main():
         writer_dict['writer'].close()
 
         # debug and test
-        
 
     print(f'accuracy:{accuracy}')
     print(f'MSE:{MSE}')

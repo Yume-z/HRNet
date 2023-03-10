@@ -16,7 +16,7 @@ import numpy as np
 
 import cv2
 import os
-
+import albumentations as A
 from .evaluation import decode_preds, compute_nme
 
 logger = logging.getLogger(__name__)
@@ -145,7 +145,7 @@ def validate(config, val_loader, model, criterion, epoch, writer_dict):
             # loss
             loss = criterion(output, target)
 
-            preds = decode_preds(score_map, [128, 256])
+            preds = decode_preds(score_map, [32, 16])
             # if epoch > 30:
             # compute_nme(preds, meta)
             #     print(f"val_pred:{preds}.")
@@ -235,7 +235,7 @@ def inference(config, data_loader, model):
             data_time.update(time.time() - end)
             output = model(inp)
             score_map = output.data.cpu()
-            preds = decode_preds(score_map, [128, 256])
+            preds = decode_preds(score_map, [32, 16])
 
 
             # NME
@@ -306,7 +306,7 @@ def inference(config, data_loader, model):
 
     if config.TEST.VISUALIZE == True:
     
-        path1 = '/public/home/zhaojh1/git_main/HRNet/data/images/'
+        path1 = '/public/home/zhaojh1/US_obj/image/'
         path2 = './visual/'
         point_size = 1
         thickness = 4  # 可以为 0 、4、8
@@ -318,7 +318,7 @@ def inference(config, data_loader, model):
 
             img = cv2.imread(os.path.join(path1, file))
             lp = tp[file]
-            transform = A.Resize(width=512, height=1024)
+            transform = A.Resize(width=128, height=64)
             transformed = transform(image=img)
             image = transformed['image']
             
@@ -344,6 +344,6 @@ def inference(config, data_loader, model):
                  
                 cv2.circle(image, point, point_size, point_color, thickness)
                 
-            cv2.imwrite(f"{os.path.join(path2, file[0:5])}.png", image, [int(cv2.IMWRITE_PNG_COMPRESSION), 9])
+            cv2.imwrite(f"{os.path.join(path2, file[0:-4])}.png", image, [int(cv2.IMWRITE_PNG_COMPRESSION), 9])
 
     return (a10,a7,a5,a3,a1), nme, predictions
